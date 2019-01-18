@@ -1,6 +1,6 @@
 FROM maven:3.5-jdk-10-slim
 
-MAINTAINER D.Valocchi <d.valocchi@ucl.ac.uk>
+MAINTAINER Carlos Marques <carlos-martins-marques@alticelabs.com>
 
 ADD adaptor /adaptor
 
@@ -9,7 +9,9 @@ WORKDIR /adaptor
 RUN mvn -e -q compile assembly:single;
 
 # New small container with java 10
-FROM openjdk:10-jre-slim
+#FROM openjdk:10-jre-slim
+# New container with tomcat 9 and jre 10
+FROM tomcat:9-jre10-slim
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
    netcat && rm -rf /var/lib/apt/lists/*
@@ -19,15 +21,15 @@ ADD broker.config /etc/son-mano/broker.config
 ADD postgres.config /etc/son-mano/postgres.config
 ADD sonata.config /etc/son-mano/sonata.config
 
-ADD son-sp-infra-* /usr/local/bin/
-ADD son-sp-infra /etc/init.d/
-ADD ./setenv.sh \
-   ./docker-entrypoint.sh /
+#ADD son-sp-infra-* /usr/local/bin/
+#ADD son-sp-infra /etc/init.d/
+ADD ./setenv.sh
+#   ./docker-entrypoint.sh /
 
-RUN chmod +x /setenv.sh \
-   /docker-entrypoint.sh \
-   /usr/local/bin/son-sp-infra-* \
-   /etc/init.d/son-sp-infra
+RUN chmod +x /setenv.sh
+#   /docker-entrypoint.sh \
+#   /usr/local/bin/son-sp-infra-* \
+#   /etc/init.d/son-sp-infra
 
 WORKDIR /adaptor
 
@@ -42,10 +44,14 @@ ENV repo_user sonatatest
 ENV repo_pass sonata
 ENV SONATA_SP_ADDRESS 127.0.0.1
 
+# Delete existing ROOT folder
+RUN rm -rf /usr/local/tomcat/webapps/ROOT
+
 # Copy the artifact generated on first container to this one
-COPY --from=0 /adaptor/target/adaptor-0.0.1-SNAPSHOT-jar-with-dependencies.jar /adaptor/target/
+COPY --from=0 /adaptor/target/ROOT.war /adaptor/target/
 
 
-CMD ["/docker-entrypoint.sh"]
+#CMD ["/docker-entrypoint.sh"]
+CMD ["/setenv.sh"]
 
 

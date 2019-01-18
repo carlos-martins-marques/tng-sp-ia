@@ -5,7 +5,7 @@
 	<groupId>sonata.kernel</groupId>
 	<artifactId>adaptor</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	<name>TANGO Infrastructure Adaptor</name>
 	<url>http://www.sonata-nfv.eu/</url>
 
@@ -73,6 +73,7 @@
 	</properties>
 
 	<build>
+		<finalName>ROOT</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
