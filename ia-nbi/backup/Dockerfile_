@@ -6,12 +6,7 @@ ADD adaptor /adaptor
 
 WORKDIR /adaptor
 
-RUN mvn -e -q compile assembly:single;
-
-ADD api /api
-
-WORKDIR /api
-
+#RUN mvn -e -q compile assembly:single;
 RUN mvn -e -q compile war:war;
 
 # New small container with java 10
@@ -27,15 +22,15 @@ ADD broker.config /etc/son-mano/broker.config
 ADD postgres.config /etc/son-mano/postgres.config
 ADD sonata.config /etc/son-mano/sonata.config
 
-ADD son-sp-infra-* /usr/local/bin/
-ADD son-sp-infra /etc/init.d/
-ADD ./setenv.sh / \
-   ./docker-entrypoint.sh /
+#ADD son-sp-infra-* /usr/local/bin/
+#ADD son-sp-infra /etc/init.d/
+ADD ./setenv.sh /
+#   ./docker-entrypoint.sh /
 
-RUN chmod +x /setenv.sh \
-   /docker-entrypoint.sh \
-   /usr/local/bin/son-sp-infra-* \
-   /etc/init.d/son-sp-infra
+RUN chmod +x /setenv.sh
+#   /docker-entrypoint.sh \
+#   /usr/local/bin/son-sp-infra-* \
+#   /etc/init.d/son-sp-infra
 
 WORKDIR /adaptor
 
@@ -54,13 +49,10 @@ ENV SONATA_SP_ADDRESS 127.0.0.1
 RUN rm -rf /usr/local/tomcat/webapps/ROOT
 
 # Copy the artifact generated on first container to this one
-COPY --from=0 /adaptor/target/adaptor-0.0.1-SNAPSHOT-jar-with-dependencies.jar /adaptor/target/
-COPY --from=0 /api/target/ROOT.war /usr/local/tomcat/webapps/
-
-# Make port 8080 available outside this container
-EXPOSE 8080
+COPY --from=0 /adaptor/target/ROOT.war /adaptor/target/
 
 
-CMD ["/docker-entrypoint.sh"]
+#CMD ["/docker-entrypoint.sh"]
+CMD ["/setenv.sh"]
 
 
