@@ -85,6 +85,8 @@ public class FwVimWimCallProcessor extends AbstractCallProcessor {
       wimVendor = WimVendor.TAPI;
     } else if (message.getTopic().contains(".emu.") && message.getTopic().contains(".wan.")) {
       wimVendor = WimVendor.EMU;
+    } else if (message.getTopic().contains(".vpnaas.")) {
+      wimVendor = WimVendor.VPNAAS;
     }
 
 
