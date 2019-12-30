@@ -1,10 +1,10 @@
 [![Build Status](http://jenkins.sonata-nfv.eu/buildStatus/icon?job=son-sp-infrabstract-vim)](http://jenkins.sonata-nfv.eu/job/son-sp-infrabstract-vim)
 
-# WIM Wrapper MOCK
+# WIM Wrapper VPNaaS
 WIM from different vendors are connected to the NBI using specific WIM Wrapper entities, which are in charge of executing WIM specific tasks that map to the generic functionalities exported to the SP. The integration between southbound interface of the wrapper and the WIM is therefore a responsibility of the Wrapper developer, when it comes to specify the medium and technologies used by wrapper and the WIM to interact, and of the SP operator, when it comes to configure credentials and endpoints to establish the connection. A repository is used to store the registered WIMs configuration and the WIM-dependant information on the deployed and running network services.
 
 ### Building
-* You can run 'docker build -t wim-wrapper-mock .' in this folder to build the self-contained docker image of the wim-wrapper-mock 
+* You can run 'docker build -t wim-wrapper-vpnaas .' in this folder to build the self-contained docker image of the wim-wrapper-vpnaas 
 
 If you prefer to manually build the source code, please consider the following:
 
@@ -43,11 +43,11 @@ You can extend the set of available VIM/WIM wrappers creating a new package of t
 
 ## Usage
 
-This sofware exposes its API through an AMPQ interface implemented with Rabbitmq. In order to use it, the WIM Wrapper MOCK must be connected to a message broker. Configuration for the connection can be set in ./Dockerfile for docker use, and in broker.config for direct use.
+This sofware exposes its API through an AMPQ interface implemented with Rabbitmq. In order to use it, the WIM Wrapper vpnaas must be connected to a message broker. Configuration for the connection can be set in ./Dockerfile for docker use, and in broker.config for direct use.
 
 ### Test
 
-You can run Unit and Module tests using docker compose. Just run in `son-sp-infrabstract/wim-wrapper-mock/`:
+You can run Unit and Module tests using docker compose. Just run in `son-sp-infrabstract/wim-wrapper-vpnaas/`:
 
 `docker-compose -f docker-compose-test.yml build`
 `docker-compose -f docker-compose-test.yml up`

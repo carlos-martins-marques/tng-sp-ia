@@ -1,6 +1,6 @@
 version: '2'
 services:
-  wim-wrapper-mock:
+  wim-wrapper-vpnaas:
     build:
       context: .
       dockerfile: Dockerfile-tests
