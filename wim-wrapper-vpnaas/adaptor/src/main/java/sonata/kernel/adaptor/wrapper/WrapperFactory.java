@@ -28,7 +28,7 @@ package sonata.kernel.adaptor.wrapper;
 
 import org.slf4j.LoggerFactory;
 
-import sonata.kernel.adaptor.wrapper.mock.WimMockWrapper;
+import sonata.kernel.adaptor.wrapper.vpnaas.WimVpnaasWrapper;
 
 public class WrapperFactory {
 
@@ -74,8 +74,8 @@ public class WrapperFactory {
     Wrapper output = null;
     Logger.info("  [WrapperFactory] - creating wrapper...");
 
-    if (config.getWimVendor().equals(WimVendor.MOCK)){
-      output = new WimMockWrapper(config);
+    if (config.getWimVendor().equals(WimVendor.VPNAAS)){
+      output = new WimVpnaasWrapper(config);
     }
 
     Logger.info("  [WrapperFactory] - Wrapper created...");

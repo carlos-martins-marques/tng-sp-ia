@@ -24,15 +24,15 @@
  * 
  */
 
-package sonata.kernel.adaptor.wrapper.mock;
+package sonata.kernel.adaptor.wrapper.vpnaas;
 
 import sonata.kernel.adaptor.wrapper.WrapperBay;
 import sonata.kernel.adaptor.wrapper.WimWrapper;
 import sonata.kernel.adaptor.wrapper.WimWrapperConfiguration;
 
-public class WimMockWrapper extends WimWrapper {
+public class WimVpnaasWrapper extends WimWrapper {
 
-  public WimMockWrapper(WimWrapperConfiguration config) {
+  public WimVpnaasWrapper(WimWrapperConfiguration config) {
     super(config);
   }
 

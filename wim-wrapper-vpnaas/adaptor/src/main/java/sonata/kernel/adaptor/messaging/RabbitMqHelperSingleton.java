@@ -82,7 +82,7 @@ public class RabbitMqHelperSingleton {
       channel = connection.createChannel();
       exchangeName = brokerConfig.getProperty("exchange") + "-" + "ia";
       channel.exchangeDeclare(exchangeName, "topic");
-      queueName = exchangeName + "." + "WimMockWrapper";
+      queueName = exchangeName + "." + "WimVpnaasWrapper";
       channel.queueDeclare(queueName, true, false, false, null);
       Logger.info("Binding queue to topics...");
 
@@ -92,8 +92,8 @@ public class RabbitMqHelperSingleton {
       //channel.queueBind(queueName, exchangeName, "platform.management.plugin.deregister");
       //Logger.info("Bound to topic \"platform.platform.management.plugin.deregister\"");
 
-      channel.queueBind(queueName, exchangeName, "infrastructure.mock.#");
-      Logger.info("[southbound] RabbitMqConsumer - bound to topic \"infrastructure.mock.#\"");
+      channel.queueBind(queueName, exchangeName, "infrastructure.vpnaas.#");
+      Logger.info("[southbound] RabbitMqConsumer - bound to topic \"infrastructure.vpnaas.#\"");
 
     } catch (TimeoutException e) {
       Logger.error(e.getMessage(), e);

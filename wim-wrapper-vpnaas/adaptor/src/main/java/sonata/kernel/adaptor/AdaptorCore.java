@@ -56,9 +56,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class AdaptorCore {
 
-  public static final String APP_ID = "sonata.kernel.WimWrapperMock";
+  public static final String APP_ID = "sonata.kernel.WimWrapperVpnaas";
   private static AdaptorCore core;
-  private static final String description = "WIM Wrapper for Mock";
+  private static final String description = "WIM Wrapper for VPNaaS";
   private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(AdaptorCore.class);
   private static final String version = "0.0.1";
   private static final int writeLockCoolDown = 100000;
@@ -125,7 +125,7 @@ public class AdaptorCore {
   private Object writeLock = new Object();
 
   /**
-   * utility constructor for Tests. Allows attaching mock MsgBus to the adaptor plug-in Manager.
+   * utility constructor for Tests. Allows attaching vpnaas MsgBus to the adaptor plug-in Manager.
    *
    * @param muxQueue A Java BlockingQueue for the AdaptorMux
    * @param dispatcherQueue A Java BlockingQueue for the AdaptorDispatcher
