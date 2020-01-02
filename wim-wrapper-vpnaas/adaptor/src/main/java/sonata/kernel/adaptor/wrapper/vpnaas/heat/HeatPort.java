@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, THALES, NCSR Demokritos ALL RIGHTS RESERVED.
+ * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, NCSR Demokritos ALL RIGHTS RESERVED.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -24,32 +24,55 @@
  * 
  */
 
-package sonata.kernel.adaptor.wrapper.vpnaas;
+package sonata.kernel.adaptor.wrapper.vpnaas.heat;
 
-import sonata.kernel.adaptor.commons.NapObject;
-import sonata.kernel.adaptor.commons.QosObject;
-import sonata.kernel.adaptor.wrapper.WrapperBay;
-import sonata.kernel.adaptor.wrapper.WimWrapper;
-import sonata.kernel.adaptor.wrapper.WimWrapperConfiguration;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class WimVpnaasWrapper extends WimWrapper {
+public class HeatPort {
 
-  public WimVpnaasWrapper(WimWrapperConfiguration config) {
-    super(config);
+  @JsonProperty("floating_IP")
+  private String floatinIp;
+
+  @JsonProperty("IP_address")
+  private String ipAddress;
+
+  @JsonProperty("MAC_address")
+  private String macAddress;
+
+  @JsonProperty("name")
+  private String portName;
+
+  public String getFloatinIp() {
+    return floatinIp;
   }
 
-  @Override
-  public boolean configureNetwork(String instanceId, String vlId, NapObject ingress, NapObject egress, QosObject qos, Boolean bidirectional) {
-
-    WrapperBay.getInstance().getWimRepo().writeServiceInstanceEntry(instanceId, this.getWimConfig().getUuid());
-    return true;
+  public String getIpAddress() {
+    return ipAddress;
   }
 
-  @Override
-  public boolean removeNetConfiguration(String instanceId, String vlId) {
-
-    WrapperBay.getInstance().getWimRepo().removeServiceInstanceEntry(instanceId);
-    return true;
+  public String getMacAddress() {
+    return macAddress;
   }
+
+  public String getPortName() {
+    return portName;
+  }
+
+  public void setFloatinIp(String floatinIp) {
+    this.floatinIp = floatinIp;
+  }
+
+  public void setIpAddress(String ipAddress) {
+    this.ipAddress = ipAddress;
+  }
+
+  public void setMacAddress(String macAddress) {
+    this.macAddress = macAddress;
+  }
+
+  public void setPortName(String portName) {
+    this.portName = portName;
+  }
+
 
 }

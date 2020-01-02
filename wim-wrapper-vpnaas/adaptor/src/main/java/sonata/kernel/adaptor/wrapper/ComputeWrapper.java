@@ -26,13 +26,13 @@
 
 package sonata.kernel.adaptor.wrapper;
 
-import sonata.kernel.adaptor.commons.FunctionDeployPayload;
-import sonata.kernel.adaptor.commons.FunctionScalePayload;
-import sonata.kernel.adaptor.commons.FunctionRemovePayload;
-import sonata.kernel.adaptor.commons.ServiceDeployPayload;
-import sonata.kernel.adaptor.commons.VnfImage;
+import sonata.kernel.adaptor.commons.*;
+import sonata.kernel.adaptor.commons.nsd.VirtualLink;
+import sonata.kernel.adaptor.wrapper.vpnaas.*;
+
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public abstract class ComputeWrapper extends AbstractWrapper implements Wrapper {
 
@@ -52,7 +52,7 @@ public abstract class ComputeWrapper extends AbstractWrapper implements Wrapper 
 
   /**
    * Deploy a the VNF described in the payload in this compute VIM.
-   * 
+   *
    * @param data the payload of a Function.Deploy call
    * @param sid the session ID for this Adaptor call.
    */
@@ -60,11 +60,11 @@ public abstract class ComputeWrapper extends AbstractWrapper implements Wrapper 
 
   /**
    * Deploy a service instance on this VIM.
-   * 
+   *
    * @param data the payload containing the service descriptors and the metadata for this service
    *        deployment
    * @param callSid the call processor to notify on completion
-   * 
+   *
    * @return true if the remove process has started correctly, false otherwise
    */
   @Deprecated
@@ -72,7 +72,7 @@ public abstract class ComputeWrapper extends AbstractWrapper implements Wrapper 
 
   /**
    * Get the resource utilisation status of this compute VIM.
-   * 
+   *
    * @return the ResourceUtilisation object representing the status of this VIM
    */
   public abstract ResourceUtilisation getResourceUtilisation();
@@ -80,40 +80,64 @@ public abstract class ComputeWrapper extends AbstractWrapper implements Wrapper 
 
   /**
    * Check if given image is stored in this compute VIM image repository.
-   * 
+   *
    * @param image the object representing the VNF image
    */
   public abstract boolean isImageStored(VnfImage image, String callSid);
 
   /**
    * Prepare a service instance in this VIM for the given instance ID.
-   * 
+   *
    * @param instanceId the ID of the instance used as reference for the prepared environment in the
    *        VIM
-   * 
+   * @param virtualLinks the virtual links containing information for the network creation
+   *
    * @return true if the remove process has started correctly, false otherwise
    */
-  public abstract boolean prepareService(String instanceId) throws Exception;
+  @Deprecated
+  public abstract boolean prepareService(String instanceId, ArrayList<VirtualLink> virtualLinks) throws Exception;
+
+  /**
+   * Network create for a service instance in this VIM for the given instance ID.
+   *
+   * @param instanceId the ID of the instance used as reference for the environment in the
+   *        VIM
+   * @param virtualLinks the virtual links containing information for the network creation
+   *
+   * @return true if the remove process has started correctly, false otherwise
+   */
+  public abstract boolean networkCreate(String instanceId, ArrayList<VirtualLink> virtualLinks) throws Exception;
+
+  /**
+   * Network delete for a service instance in this VIM for the given instance ID.
+   *
+   * @param instanceId the ID of the instance used as reference for the environment in the
+   *        VIM
+   * @param virtualLinks the virtual links containing information for the network deletion
+   *
+   * @return true if the remove process has started correctly, false otherwise
+   */
+  public abstract boolean networkDelete(String instanceId, ArrayList<VirtualLink> virtualLinks) throws Exception;
 
   /**
    * Remove the given image from this compute VIM image repository.
-   * 
+   *
    * @param image the object representing the VNF image
    */
   public abstract void removeImage(VnfImage image);
 
   /**
    * Remove a service instance from this VIM.
-   * 
-   * @param instanceUuid the identifier of the instance in the VIM scope
-   * 
-   * @return true if the remove process has started correctly, false otherwise
+   *
+   * @param data the payload of a service.Remove call
+   * @param sid the session ID for this Adaptor call
+   *
    */
-  public abstract boolean removeService(String instanceUuid, String callSid);
+  public abstract void removeService(ServiceRemovePayload data, String sid);
 
   /**
    * Scale the VNF described in the payload in this compute VIM
-   * 
+   *
    * @param data the payload of a Function.Scale call
    * @param sid the session ID for this Adaptor call
    */
@@ -122,7 +146,7 @@ public abstract class ComputeWrapper extends AbstractWrapper implements Wrapper 
 
   /**
    * Remove a VNF described in the payload in this compute VIM
-   * 
+   *
    * @param data the payload of a Function.Remove call
    * @param sid the session ID for this Adaptor call
    */
@@ -131,8 +155,22 @@ public abstract class ComputeWrapper extends AbstractWrapper implements Wrapper 
 
   /**
    * Upload the given image to this compute VIM image repository.
-   * 
-   * @param imageUrl the URL from which the image can be downloded.
+   *
+   * @param image the VnfImage with URL from which the image can be downloaded.
    */
   public abstract void uploadImage(VnfImage image) throws IOException;
+
+  /**
+   * Get the external networks list for this compute VIM.
+   *
+   * @return the List of the external networks
+   */
+  public abstract ArrayList<ExtNetwork> getNetworks();
+
+  /**
+   * Get the external routers list for this compute VIM.
+   *
+   * @return the List of the external routers
+   */
+  public abstract ArrayList<Router> getRouters();
 }

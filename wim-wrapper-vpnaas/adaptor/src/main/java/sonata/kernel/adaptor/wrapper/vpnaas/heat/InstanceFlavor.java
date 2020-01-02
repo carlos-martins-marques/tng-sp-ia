@@ -22,43 +22,69 @@
  *
  * @author Dario Valocchi (Ph.D.), UCL
  * 
+ * @author Guy Paz, Nokia
+ * 
  */
 
-package sonata.kernel.adaptor.commons;
+package sonata.kernel.adaptor.wrapper.vpnaas.heat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class DeconfigureWanPayload {
+import sonata.kernel.adaptor.commons.vnfd.Unit.MemoryUnit;
 
-  @JsonProperty("service_instance_id")
-  private String serviceInstanceId;
+public class InstanceFlavor {
 
-  @JsonProperty("wim_uuid")
-  private String wimUuid;
+  @JsonProperty("cpu_core")
+  private int cpu;
 
-  @JsonProperty("vl_id")
-  private String vlId;
+  private int memory;
+  @JsonProperty("memory_unit")
+  private MemoryUnit memoryUnit;
 
-  public String getServiceInstanceId() {
-    return serviceInstanceId;
+  private int storage;
+  @JsonProperty("storage_unit")
+  private MemoryUnit storageUnit;
+
+  public int getCpu() {
+    return cpu;
   }
 
-  public String getWimUuid() {
-    return wimUuid;
+  public int getMemory() {
+    return memory;
   }
 
-  public String getVlId() {
-    return vlId;
-  }
-  public void setServiceInstanceId(String serviceInstanceId) {
-    this.serviceInstanceId = serviceInstanceId;
+  public MemoryUnit getMemoryUnit() {
+    return memoryUnit;
   }
 
-  public void setWimUuid(String wimUuid) {
-    this.wimUuid = wimUuid;
+  public int getStorage() {
+    return storage;
   }
 
-  public void setVlId(String vlId) {
-    this.vlId = vlId;
+  public MemoryUnit getStorageUnit() {
+    return storageUnit;
   }
+
+  public void setCpu(int cpu) {
+    this.cpu = cpu;
+  }
+
+  public void setMemory(int memory) {
+    this.memory = memory;
+  }
+
+  public void setMemoryUnit(MemoryUnit memoryUnit) {
+    this.memoryUnit = memoryUnit;
+  }
+
+  public void setStorage(int storage) {
+    this.storage = storage;
+  }
+
+  public void setStorageUnit(MemoryUnit storageUnit) {
+    this.storageUnit = storageUnit;
+  }
+
+
+
 }

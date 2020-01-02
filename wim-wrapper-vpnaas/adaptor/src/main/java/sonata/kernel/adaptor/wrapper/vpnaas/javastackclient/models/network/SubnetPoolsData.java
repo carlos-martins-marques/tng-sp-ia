@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, THALES, NCSR Demokritos ALL RIGHTS RESERVED.
+ * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, NCSR Demokritos ALL RIGHTS RESERVED.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -20,36 +20,28 @@
  * would like to acknowledge the contributions of their colleagues of the SONATA partner consortium
  * (www.sonata-nfv.eu).
  *
- * @author Dario Valocchi (Ph.D.), UCL
+ * @author Adel Zaalouk (Ph.D.), NEC
  * 
  */
 
-package sonata.kernel.adaptor.wrapper.vpnaas;
+package sonata.kernel.adaptor.wrapper.vpnaas.javastackclient.models.network;
 
-import sonata.kernel.adaptor.commons.NapObject;
-import sonata.kernel.adaptor.commons.QosObject;
-import sonata.kernel.adaptor.wrapper.WrapperBay;
-import sonata.kernel.adaptor.wrapper.WimWrapper;
-import sonata.kernel.adaptor.wrapper.WimWrapperConfiguration;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class WimVpnaasWrapper extends WimWrapper {
+import java.util.ArrayList;
 
-  public WimVpnaasWrapper(WimWrapperConfiguration config) {
-    super(config);
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class SubnetPoolsData {
+
+  @JsonProperty("subnetpools")
+  private ArrayList<SubnetPoolProperties> subnetPools;
+
+  public ArrayList<SubnetPoolProperties> getSubnetPools() {
+    return subnetPools;
   }
 
-  @Override
-  public boolean configureNetwork(String instanceId, String vlId, NapObject ingress, NapObject egress, QosObject qos, Boolean bidirectional) {
-
-    WrapperBay.getInstance().getWimRepo().writeServiceInstanceEntry(instanceId, this.getWimConfig().getUuid());
-    return true;
+  public void setSubnetPools(ArrayList<SubnetPoolProperties> subnetPools) {
+    this.subnetPools = subnetPools;
   }
-
-  @Override
-  public boolean removeNetConfiguration(String instanceId, String vlId) {
-
-    WrapperBay.getInstance().getWimRepo().removeServiceInstanceEntry(instanceId);
-    return true;
-  }
-
 }

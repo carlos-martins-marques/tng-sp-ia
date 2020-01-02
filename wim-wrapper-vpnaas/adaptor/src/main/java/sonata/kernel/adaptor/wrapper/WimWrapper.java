@@ -26,6 +26,9 @@
 
 package sonata.kernel.adaptor.wrapper;
 
+import sonata.kernel.adaptor.commons.NapObject;
+import sonata.kernel.adaptor.commons.QosObject;
+
 public abstract class WimWrapper extends AbstractWrapper implements Wrapper {
 
 
@@ -47,7 +50,7 @@ public abstract class WimWrapper extends AbstractWrapper implements Wrapper {
    * 
    * @return true if the WAN has been configured correctly.
    */
-  public abstract boolean configureNetwork(String instanceId, String inputSegment, String outputSegment, String[] segmentList);
+  public abstract boolean configureNetwork(String instanceId, String vlId, NapObject ingress, NapObject egress, QosObject qos, Boolean bidirectional);
 
   
   
@@ -57,6 +60,6 @@ public abstract class WimWrapper extends AbstractWrapper implements Wrapper {
    * @param instanceId the ID of the service instance to de-configure
    * @return true if the WAN has been de-configured correctly.
    */
-  public abstract boolean removeNetConfiguration(String instanceId);
+  public abstract boolean removeNetConfiguration(String instanceId, String vlId);
 
 }

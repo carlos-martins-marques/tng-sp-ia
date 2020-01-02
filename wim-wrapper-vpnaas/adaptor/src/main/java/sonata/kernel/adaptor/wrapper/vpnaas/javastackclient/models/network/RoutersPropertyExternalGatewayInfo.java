@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, THALES, NCSR Demokritos ALL RIGHTS RESERVED.
+ * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, NCSR Demokritos ALL RIGHTS RESERVED.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -20,36 +20,38 @@
  * would like to acknowledge the contributions of their colleagues of the SONATA partner consortium
  * (www.sonata-nfv.eu).
  *
- * @author Dario Valocchi (Ph.D.), UCL
+ * @author Adel Zaalouk (Ph.D.), NEC
  * 
  */
 
-package sonata.kernel.adaptor.wrapper.vpnaas;
+package sonata.kernel.adaptor.wrapper.vpnaas.javastackclient.models.network;
 
-import sonata.kernel.adaptor.commons.NapObject;
-import sonata.kernel.adaptor.commons.QosObject;
-import sonata.kernel.adaptor.wrapper.WrapperBay;
-import sonata.kernel.adaptor.wrapper.WimWrapper;
-import sonata.kernel.adaptor.wrapper.WimWrapperConfiguration;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class WimVpnaasWrapper extends WimWrapper {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class RoutersPropertyExternalGatewayInfo {
 
-  public WimVpnaasWrapper(WimWrapperConfiguration config) {
-    super(config);
+  @JsonProperty("network_id")
+  private String networkId;
+
+
+  public String getNetworkId() {
+    return networkId;
   }
+
+
+  public void setNetworkId(String networkId) {
+    this.networkId = networkId;
+  }
+
 
   @Override
-  public boolean configureNetwork(String instanceId, String vlId, NapObject ingress, NapObject egress, QosObject qos, Boolean bidirectional) {
+  public String toString() {
+    String out = "";
 
-    WrapperBay.getInstance().getWimRepo().writeServiceInstanceEntry(instanceId, this.getWimConfig().getUuid());
-    return true;
+    out += networkId + " ";
+
+    return out;
   }
-
-  @Override
-  public boolean removeNetConfiguration(String instanceId, String vlId) {
-
-    WrapperBay.getInstance().getWimRepo().removeServiceInstanceEntry(instanceId);
-    return true;
-  }
-
 }

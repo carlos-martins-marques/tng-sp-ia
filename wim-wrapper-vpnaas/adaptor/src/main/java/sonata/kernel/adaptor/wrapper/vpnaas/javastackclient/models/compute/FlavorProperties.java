@@ -20,45 +20,69 @@
  * would like to acknowledge the contributions of their colleagues of the SONATA partner consortium
  * (www.sonata-nfv.eu).
  *
- * @author Dario Valocchi (Ph.D.), UCL
+ * @author Adel Zaalouk (Ph.D.), NEC
  * 
  */
 
-package sonata.kernel.adaptor.commons;
+package sonata.kernel.adaptor.wrapper.vpnaas.javastackclient.models.compute;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-public class DeconfigureWanPayload {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class FlavorProperties {
 
-  @JsonProperty("service_instance_id")
-  private String serviceInstanceId;
+  private String disk;
+  private String id;
+  private String name;
+  private String ram;
+  private String vcpus;
 
-  @JsonProperty("wim_uuid")
-  private String wimUuid;
-
-  @JsonProperty("vl_id")
-  private String vlId;
-
-  public String getServiceInstanceId() {
-    return serviceInstanceId;
+  public String getDisk() {
+    return disk;
   }
 
-  public String getWimUuid() {
-    return wimUuid;
+  public String getId() {
+    return id;
   }
 
-  public String getVlId() {
-    return vlId;
-  }
-  public void setServiceInstanceId(String serviceInstanceId) {
-    this.serviceInstanceId = serviceInstanceId;
+  public String getName() {
+    return name;
   }
 
-  public void setWimUuid(String wimUuid) {
-    this.wimUuid = wimUuid;
+  public String getRam() {
+    return ram;
   }
 
-  public void setVlId(String vlId) {
-    this.vlId = vlId;
+  public String getVcpus() {
+    return vcpus;
+  }
+
+  public void setDisk(String disk) {
+    this.disk = disk;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setRam(String ram) {
+    this.ram = ram;
+  }
+
+  public void setVcpus(String vcpus) {
+    this.vcpus = vcpus;
+  }
+
+  @Override
+  public String toString() {
+    String out = "";
+
+    out += id + "   " + name + "   " + vcpus + " vcpus   " + ram + " mem   " + disk + " disk";
+
+    return out;
   }
 }

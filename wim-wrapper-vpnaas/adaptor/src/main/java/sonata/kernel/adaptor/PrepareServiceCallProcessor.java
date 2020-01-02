@@ -105,7 +105,7 @@ public class PrepareServiceCallProcessor extends AbstractCallProcessor {
 
         if (WrapperBay.getInstance().getVimRepo().getServiceInstanceVimUuid(payload.getInstanceId(),
             vim.getUuid()) == null) {
-          boolean success = wr.prepareService(payload.getInstanceId());
+          boolean success = wr.prepareService(payload.getInstanceId(), vim.getVirtualLinks());
           if (!success) {
             throw new Exception("Unable to prepare the environment for instance: "
                 + payload.getInstanceId() + " on Compute VIM " + vim.getUuid());

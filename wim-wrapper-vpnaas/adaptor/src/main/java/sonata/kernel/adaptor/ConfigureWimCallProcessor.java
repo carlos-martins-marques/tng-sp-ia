@@ -36,10 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import sonata.kernel.adaptor.commons.ComparableUuid;
-import sonata.kernel.adaptor.commons.ConfigureWanPayload;
-import sonata.kernel.adaptor.commons.NapObject;
-import sonata.kernel.adaptor.commons.SonataManifestMapper;
+import sonata.kernel.adaptor.commons.*;
 import sonata.kernel.adaptor.messaging.ServicePlatformMessage;
 import sonata.kernel.adaptor.wrapper.WimWrapper;
 import sonata.kernel.adaptor.wrapper.WrapperBay;
@@ -78,90 +75,21 @@ public class ConfigureWimCallProcessor extends AbstractCallProcessor {
     }
     Logger.debug("Received request: ");
     Logger.debug(message.getBody());
-    String instanceId = request.getInstanceId();
-
-    HashMap<String, ArrayList<String>> wim2VimsMap = new HashMap<String, ArrayList<String>>();
-    ArrayList<ComparableUuid> vims = request.getVimList();
-
-    HashSet<ComparableUuid> set = new HashSet<ComparableUuid>(vims);
-
-    if (set.size() < vims.size()) {
-      Logger.error(
-          "Error with the wan configure payload: duplicate VIMS in the list. A placement error?");
-      this.sendToMux(new ServicePlatformMessage(
-          "{\"request_status\":\"FAILED\",\"message\":\"Duplicate VIMs in vim_list\"}",
-          "application/json", message.getReplyTo(), message.getSid(), null));
-      out = false;
-      return out;
-    }
-
-    Collections.sort(vims);
+    String instanceId = request.getServiceInstanceId();
+    String wimUuid = request.getWimUuid();
+    String vlId = request.getVlId();
+    NapObject ingress = request.getIngress();
+    NapObject egress = request.getEgress();
+    QosObject qos = request.getQos();
+    Boolean bidirectional = request.getBidirectional();
 
 
-    ArrayList<String> vimsUuid = new ArrayList<String>(vims.size());
-    for (ComparableUuid uuid : vims)
-      vimsUuid.add(uuid.getUuid());
-    for (String vimUuid : vimsUuid) {
-      WimWrapperRecord record = WrapperBay.getInstance().getWimRecordFromAttachedVim(vimUuid);
-      if (record == null) {
-        Logger.error("Error in wan configuration call: Can't find the WIM to wich VIM " + vimUuid
-            + " is attached");
-        this.sendToMux(new ServicePlatformMessage(
-            "{\"request_status\":\"FAILED\",\"message\":\"Can't find the WIM to wich VIM " + vimUuid
-                + " is attached\"}",
-            "application/json", message.getReplyTo(), message.getSid(), null));
-        out = false;
-        return out;
-      }
-      WimWrapper wim = (WimWrapper) record.getWimWrapper();
-      if (wim2VimsMap.containsKey(wim.getWimConfig().getUuid())) {
-        wim2VimsMap.get(wim.getWimConfig().getUuid()).add(vimUuid);
-      } else {
-        ArrayList<String> vimsOfThisWim = new ArrayList<String>();
-        vimsOfThisWim.add(vimUuid);
-        wim2VimsMap.put(wim.getWimConfig().getUuid(), vimsOfThisWim);
-      }
-    }
+    WimWrapper wim =
+        (WimWrapper) WrapperBay.getInstance().getWimRecordFromWimUuid(wimUuid).getWimWrapper();
 
-    if (request.getNap() == null) {
-      for (String wimUuid : wim2VimsMap.keySet()) {
-        ArrayList<String> vimsOfThisWim = wim2VimsMap.get(wimUuid);
-        Collections.sort(vimsOfThisWim);
-        ArrayList<String> addressOfVims = new ArrayList<String>();
-        for (String uuid : vimsOfThisWim) {
-          String address = WrapperBay.getInstance().getVimAddressFromVimUuid(uuid);
-          if (address != null) addressOfVims.add(address);
-        }
+    wim.configureNetwork(instanceId, vlId, ingress, egress, qos, bidirectional);
 
-        WimWrapper wim =
-            (WimWrapper) WrapperBay.getInstance().getWimRecordFromWimUuid(wimUuid).getWimWrapper();
-        String[] addressesArray = new String[addressOfVims.size()];
-        addressesArray = addressOfVims.toArray(addressesArray);
-        wim.configureNetwork(instanceId, null, null, addressesArray);
-      }
-    } else {
-      for (NapObject ingress_nap : request.getNap().getIngresses()) {
-        for (NapObject eggress_nap : request.getNap().getEgresses()) {
-          for (String wimUuid : wim2VimsMap.keySet()) {
-            ArrayList<String> vimsOfThisWim = wim2VimsMap.get(wimUuid);
-            Collections.sort(vimsOfThisWim);
-            ArrayList<String> addressOfVims = new ArrayList<String>();
-            for (String uuid : vimsOfThisWim) {
-              String address = WrapperBay.getInstance().getVimAddressFromVimUuid(uuid);
-              if (address != null) addressOfVims.add(address);
-            }
 
-            WimWrapper wim = (WimWrapper) WrapperBay.getInstance().getWimRecordFromWimUuid(wimUuid)
-                .getWimWrapper();
-            String[] addressesArray = new String[addressOfVims.size()];
-            addressesArray = addressOfVims.toArray(addressesArray);
-            wim.configureNetwork(instanceId, ingress_nap.getNap(), eggress_nap.getNap(),
-                addressesArray);
-
-          }
-        }
-      }
-    }
     this.sendToMux(new ServicePlatformMessage("{\"request_status\":\"COMPLETED\",\"message\":\"\"}",
         "application/json", message.getReplyTo(), message.getSid(), null));
 

@@ -26,10 +26,13 @@
 
 package sonata.kernel.adaptor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.LoggerFactory;
 
+import sonata.kernel.adaptor.commons.ServiceRemovePayload;
+import sonata.kernel.adaptor.commons.SonataManifestMapper;
 import sonata.kernel.adaptor.messaging.ServicePlatformMessage;
 import sonata.kernel.adaptor.wrapper.ComputeWrapper;
 import sonata.kernel.adaptor.wrapper.WrapperBay;
@@ -45,6 +48,7 @@ public class RemoveServiceCallProcessor extends AbstractCallProcessor {
       LoggerFactory.getLogger(RemoveServiceCallProcessor.class);
   private boolean errorsHappened;
   private ArrayList<String> wrapperQueue;
+  private ServiceRemovePayload data;
 
   /**
    * Generate a CallProcessor to process an API call to create a new VIM wrapper
@@ -62,35 +66,51 @@ public class RemoveServiceCallProcessor extends AbstractCallProcessor {
   public boolean process(ServicePlatformMessage message) {
     // process json message to get the service UUID
     // and remove it
-    JSONTokener tokener = new JSONTokener(message.getBody());
-    JSONObject jsonObject = (JSONObject) tokener.nextValue();
-    String instanceUuid = jsonObject.getString("instance_uuid");
-    String[] vimUuidList =
-        WrapperBay.getInstance().getVimRepo().getComputeVimUuidFromInstance(instanceUuid);
-    if (vimUuidList == null || vimUuidList.length == 0) {
-      this.sendResponse(
-          "{\"request_status\":\"WARNING\",\"message\":\"can't find instance UUID or associated VIMs in Infrastructure repository\"}");
-      return false;
-    }
-    this.wrapperQueue = new ArrayList<String>(Arrays.asList(vimUuidList));
-    Logger.debug("List of VIMs hosting the service: ");
-    Logger.debug(wrapperQueue.toString());
-    for (String vimUuid : vimUuidList) {
-      ComputeWrapper wr = WrapperBay.getInstance().getComputeWrapper(vimUuid);
-      if (wr == null) {
-        Logger.warn("Error retrieving the wrapper");
-
-        this.sendToMux(new ServicePlatformMessage(
-            "{\"request_status\":\"WARNING\",\"message\":\"can't build a wrapper for VIM UUID "
-                + vimUuid + "\"}",
-            "application/json", message.getReplyTo(), message.getSid(), null));
-        // return false;
-        continue;
-      }
-      wr.addObserver(this);
-      wr.removeService(instanceUuid, this.getSid());
-    }
     boolean out = true;
+    Logger.info("Remove service call received by call processor.");
+    // parse the payload to get Wrapper UUID from the request body
+    Logger.info("Parsing payload...");
+    data = null;
+    ObjectMapper mapper = SonataManifestMapper.getSonataMapper();
+    try {
+      data = mapper.readValue(message.getBody(), ServiceRemovePayload.class);
+      Logger.info("payload parsed");
+
+      JSONTokener tokener = new JSONTokener(message.getBody());
+      JSONObject jsonObject = (JSONObject) tokener.nextValue();
+      String instanceUuid = jsonObject.getString("instance_uuid");
+      String[] vimUuidList =
+          WrapperBay.getInstance().getVimRepo().getComputeVimUuidFromInstance(instanceUuid);
+      if (vimUuidList == null || vimUuidList.length == 0) {
+        this.sendResponse(
+            "{\"request_status\":\"WARNING\",\"message\":\"can't find instance UUID or associated VIMs in Infrastructure repository\"}");
+        return false;
+      }
+      this.wrapperQueue = new ArrayList<String>(Arrays.asList(vimUuidList));
+      Logger.debug("List of VIMs hosting the service: ");
+      Logger.debug(wrapperQueue.toString());
+      for (String vimUuid : vimUuidList) {
+        ComputeWrapper wr = WrapperBay.getInstance().getComputeWrapper(vimUuid);
+        if (wr == null) {
+          Logger.warn("Error retrieving the wrapper");
+
+          this.sendToMux(new ServicePlatformMessage(
+              "{\"request_status\":\"WARNING\",\"message\":\"can't build a wrapper for VIM UUID "
+                  + vimUuid + "\"}",
+              "application/json", message.getReplyTo(), message.getSid(), null));
+          // return false;
+          continue;
+        }
+        wr.addObserver(this);
+        wr.removeService(data, this.getSid());
+      }
+    } catch (Exception e) {
+      Logger.error("Error Removing the service: " + e.getMessage(), e);
+      this.sendToMux(new ServicePlatformMessage(
+          "{\"request_status\":\"ERROR\",\"message\":\"Removing Error\"}", "application/json",
+          message.getReplyTo(), message.getSid(), null));
+      out = false;
+    }
     return out;
   }
 

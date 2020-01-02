@@ -20,45 +20,62 @@
  * would like to acknowledge the contributions of their colleagues of the SONATA partner consortium
  * (www.sonata-nfv.eu).
  *
- * @author Dario Valocchi (Ph.D.), UCL
+ * @author Adel Zaalouk (Ph.D.), NEC
  * 
  */
 
-package sonata.kernel.adaptor.commons;
+package sonata.kernel.adaptor.wrapper.vpnaas.javastackclient.models.authentication;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-public class DeconfigureWanPayload {
+import java.util.List;
 
-  @JsonProperty("service_instance_id")
-  private String serviceInstanceId;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Token {
+  private List<String> audit_ids;
+  private String expires;
+  private String id;
+  private String issued_at;
+  private Tenant tenant;
 
-  @JsonProperty("wim_uuid")
-  private String wimUuid;
 
-  @JsonProperty("vl_id")
-  private String vlId;
-
-  public String getServiceInstanceId() {
-    return serviceInstanceId;
+  public List<String> getAudit_ids() {
+    return audit_ids;
   }
 
-  public String getWimUuid() {
-    return wimUuid;
+  public String getExpires() {
+    return expires;
   }
 
-  public String getVlId() {
-    return vlId;
-  }
-  public void setServiceInstanceId(String serviceInstanceId) {
-    this.serviceInstanceId = serviceInstanceId;
+  public String getId() {
+    return this.id;
   }
 
-  public void setWimUuid(String wimUuid) {
-    this.wimUuid = wimUuid;
+  public String getIssued_at() {
+    return issued_at;
   }
 
-  public void setVlId(String vlId) {
-    this.vlId = vlId;
+  public Tenant getTenant() {
+    return this.tenant;
+  }
+
+  public void setAudit_ids(List<String> audit_ids) {
+    this.audit_ids = audit_ids;
+  }
+
+  public void setExpires(String expires) {
+    this.expires = expires;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public void setIssued_at(String issued_at) {
+    this.issued_at = issued_at;
+  }
+
+  public void setTenant(Tenant tenant) {
+    this.tenant = tenant;
   }
 }

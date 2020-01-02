@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, THALES, NCSR Demokritos ALL RIGHTS RESERVED.
+ * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, NCSR Demokritos ALL RIGHTS RESERVED.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -20,36 +20,57 @@
  * would like to acknowledge the contributions of their colleagues of the SONATA partner consortium
  * (www.sonata-nfv.eu).
  *
- * @author Dario Valocchi (Ph.D.), UCL
+ * @author Adel Zaalouk (Ph.D.), NEC
  * 
  */
 
-package sonata.kernel.adaptor.wrapper.vpnaas;
+package sonata.kernel.adaptor.wrapper.vpnaas.javastackclient.models.Image;
 
-import sonata.kernel.adaptor.commons.NapObject;
-import sonata.kernel.adaptor.commons.QosObject;
-import sonata.kernel.adaptor.wrapper.WrapperBay;
-import sonata.kernel.adaptor.wrapper.WimWrapper;
-import sonata.kernel.adaptor.wrapper.WimWrapperConfiguration;
 
-public class WimVpnaasWrapper extends WimWrapper {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-  public WimVpnaasWrapper(WimWrapperConfiguration config) {
-    super(config);
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Image {
+
+  private String checksum;
+  private String container_format;
+  private String id;
+  private String name;
+
+  public String getChecksum() {
+    return checksum;
   }
 
+  public String getContainer_format() {
+    return container_format;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setChecksum(String checksum) {
+    this.checksum = checksum;
+  }
+
+  public void setContainer_format(String container_format) {
+    this.container_format = container_format;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+  
   @Override
-  public boolean configureNetwork(String instanceId, String vlId, NapObject ingress, NapObject egress, QosObject qos, Boolean bidirectional) {
-
-    WrapperBay.getInstance().getWimRepo().writeServiceInstanceEntry(instanceId, this.getWimConfig().getUuid());
-    return true;
+  public String toString(){
+   return this.name; 
   }
-
-  @Override
-  public boolean removeNetConfiguration(String instanceId, String vlId) {
-
-    WrapperBay.getInstance().getWimRepo().removeServiceInstanceEntry(instanceId);
-    return true;
-  }
-
 }

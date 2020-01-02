@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, THALES, NCSR Demokritos ALL RIGHTS RESERVED.
+ * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, NCSR Demokritos ALL RIGHTS RESERVED.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -22,34 +22,37 @@
  *
  * @author Dario Valocchi (Ph.D.), UCL
  * 
+ * @author Guy Paz, Nokia
+ * 
  */
 
-package sonata.kernel.adaptor.wrapper.vpnaas;
+package sonata.kernel.adaptor.wrapper.vpnaas.heat;
 
-import sonata.kernel.adaptor.commons.NapObject;
-import sonata.kernel.adaptor.commons.QosObject;
-import sonata.kernel.adaptor.wrapper.WrapperBay;
-import sonata.kernel.adaptor.wrapper.WimWrapper;
-import sonata.kernel.adaptor.wrapper.WimWrapperConfiguration;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class WimVpnaasWrapper extends WimWrapper {
+public class HeatRouter {
 
-  public WimVpnaasWrapper(WimWrapperConfiguration config) {
-    super(config);
+  @JsonProperty("router_id")
+  private String routerId;
+
+  @JsonProperty("router_name")
+  private String routerName;
+
+  public String getRouterId() {
+    return routerId;
   }
 
-  @Override
-  public boolean configureNetwork(String instanceId, String vlId, NapObject ingress, NapObject egress, QosObject qos, Boolean bidirectional) {
-
-    WrapperBay.getInstance().getWimRepo().writeServiceInstanceEntry(instanceId, this.getWimConfig().getUuid());
-    return true;
+  public String getRouterName() {
+    return routerName;
   }
 
-  @Override
-  public boolean removeNetConfiguration(String instanceId, String vlId) {
-
-    WrapperBay.getInstance().getWimRepo().removeServiceInstanceEntry(instanceId);
-    return true;
+  public void setRouterId(String routerId) {
+    this.routerId = routerId;
   }
+
+  public void setRouterName(String routerName) {
+    this.routerName = routerName;
+  }
+
 
 }

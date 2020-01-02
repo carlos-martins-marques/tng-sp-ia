@@ -20,45 +20,77 @@
  * would like to acknowledge the contributions of their colleagues of the SONATA partner consortium
  * (www.sonata-nfv.eu).
  *
- * @author Dario Valocchi (Ph.D.), UCL
+ * @author Adel Zaalouk (Ph.D.), NEC
  * 
  */
 
-package sonata.kernel.adaptor.commons;
+package sonata.kernel.adaptor.wrapper.vpnaas.javastackclient.models.network;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class DeconfigureWanPayload {
+import java.util.ArrayList;
 
-  @JsonProperty("service_instance_id")
-  private String serviceInstanceId;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class RulesProperties {
 
-  @JsonProperty("wim_uuid")
-  private String wimUuid;
+  private String id;
+  private String type;
+  private String direction;
+  @JsonProperty("max_kbps")
+  private int maxKbps;
+  @JsonProperty("min_kbps")
+  private int minKbps;
 
-  @JsonProperty("vl_id")
-  private String vlId;
 
-  public String getServiceInstanceId() {
-    return serviceInstanceId;
+  public String getId() {
+    return id;
   }
 
-  public String getWimUuid() {
-    return wimUuid;
+  public String getType() {
+    return type;
   }
 
-  public String getVlId() {
-    return vlId;
-  }
-  public void setServiceInstanceId(String serviceInstanceId) {
-    this.serviceInstanceId = serviceInstanceId;
+  public String getDirection() {
+    return direction;
   }
 
-  public void setWimUuid(String wimUuid) {
-    this.wimUuid = wimUuid;
+  public int getMaxKbps() {
+    return maxKbps;
   }
 
-  public void setVlId(String vlId) {
-    this.vlId = vlId;
+  public int getMinKbps() {
+    return minKbps;
+  }
+
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public void setDirection(String direction) {
+    this.direction = direction;
+  }
+
+  public void setMaxKbps(int maxKbps) {
+    this.maxKbps = maxKbps;
+  }
+
+  public void setMinKbps(int minKbps) {
+    this.minKbps = minKbps;
+  }
+
+
+  @Override
+  public String toString() {
+    String out = "";
+
+    out += id + "   " + type + "   " + direction + "   " + maxKbps + "   " + minKbps + "   ";
+
+    return out;
   }
 }

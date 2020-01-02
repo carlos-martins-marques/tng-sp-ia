@@ -34,36 +34,79 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ConfigureWanPayload {
 
   @JsonProperty("service_instance_id")
-  private String instanceId;
-  @JsonProperty("vim_list")
-  private ArrayList<ComparableUuid> vimList;
-  @JsonProperty("nap")
-  private NetworkAttachmentPoints nap;
+  private String serviceInstanceId;
 
-  public String getInstanceId() {
-    return instanceId;
+  @JsonProperty("wim_uuid")
+  private String wimUuid;
+
+  @JsonProperty("vl_id")
+  private String vlId;
+
+  private NapObject ingress;
+
+  private NapObject egress;
+
+  private QosObject qos;
+
+  private Boolean bidirectional;
+
+
+  public String getServiceInstanceId() {
+    return serviceInstanceId;
   }
 
-  public ArrayList<ComparableUuid> getVimList() {
-    return vimList;
+  public String getWimUuid() {
+    return wimUuid;
   }
 
-  public NetworkAttachmentPoints getNap() {
-    return nap;
+  public String getVlId() {
+    return vlId;
   }
 
-  public void setInstanceId(String instanceId) {
-    this.instanceId = instanceId;
+  public NapObject getIngress() {
+    return ingress;
   }
 
-  public void setVimList(ArrayList<ComparableUuid> vimList) {
-    this.vimList = vimList;
+  public NapObject getEgress() {
+    return egress;
   }
 
-  public void setNap(NetworkAttachmentPoints nap) {
-    this.nap = nap;
+  public QosObject getQos() {
+    return qos;
   }
 
+  public Boolean getBidirectional() {
+    return bidirectional;
+  }
+
+
+  public void setServiceInstanceId(String serviceInstanceId) {
+    this.serviceInstanceId = serviceInstanceId;
+  }
+
+  public void setWimUuid(String wimUuid) {
+    this.wimUuid = wimUuid;
+  }
+
+  public void setVlId(String vlId) {
+    this.vlId = vlId;
+  }
+
+  public void setIngress(NapObject ingress) {
+    this.ingress = ingress;
+  }
+
+  public void setEgress(NapObject egress) {
+    this.egress = egress;
+  }
+
+  public void setQos(QosObject qos) {
+    this.qos = qos;
+  }
+
+  public void setBidirectional(Boolean bidirectional) {
+    this.bidirectional = bidirectional;
+  }
 
 
 }

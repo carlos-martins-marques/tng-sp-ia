@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, THALES, NCSR Demokritos ALL RIGHTS RESERVED.
+ * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, NCSR Demokritos ALL RIGHTS RESERVED.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -22,34 +22,52 @@
  *
  * @author Dario Valocchi (Ph.D.), UCL
  * 
+ * @author Thomas Soenen, imec
+ *
+ * @author Guy Paz, Nokia
+ * 
  */
 
-package sonata.kernel.adaptor.wrapper.vpnaas;
+package sonata.kernel.adaptor.wrapper.vpnaas.heat;
 
-import sonata.kernel.adaptor.commons.NapObject;
-import sonata.kernel.adaptor.commons.QosObject;
-import sonata.kernel.adaptor.wrapper.WrapperBay;
-import sonata.kernel.adaptor.wrapper.WimWrapper;
-import sonata.kernel.adaptor.wrapper.WimWrapperConfiguration;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-public class WimVpnaasWrapper extends WimWrapper {
+import java.util.HashMap;
 
-  public WimVpnaasWrapper(WimWrapperConfiguration config) {
-    super(config);
+@JsonPropertyOrder({"templateVersion", "resources"})
+public class HeatTemplate {
+
+  private HashMap<String, Object> resources;
+
+  @JsonProperty("heat_template_version")
+  private String templateVersion = "2016-04-08";
+
+  public HeatTemplate() {
+    resources = new HashMap<String, Object>();
   }
 
-  @Override
-  public boolean configureNetwork(String instanceId, String vlId, NapObject ingress, NapObject egress, QosObject qos, Boolean bidirectional) {
-
-    WrapperBay.getInstance().getWimRepo().writeServiceInstanceEntry(instanceId, this.getWimConfig().getUuid());
-    return true;
+  public HashMap<String, Object> getResources() {
+    return resources;
   }
 
-  @Override
-  public boolean removeNetConfiguration(String instanceId, String vlId) {
-
-    WrapperBay.getInstance().getWimRepo().removeServiceInstanceEntry(instanceId);
-    return true;
+  public String getTemplateVersion() {
+    return templateVersion;
   }
 
+  public void putResource(String key, Object value) {
+    this.resources.put(key, value);
+  }
+
+  public void removeResource(String key) {
+    this.resources.remove(key);
+  }
+
+  public void setResources(HashMap<String, Object> resources) {
+    this.resources = resources;
+  }
+
+  public void setTemplateVersion(String templateVersion) {
+    this.templateVersion = templateVersion;
+  }
 }

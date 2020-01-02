@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, THALES, NCSR Demokritos ALL RIGHTS RESERVED.
+ * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, NCSR Demokritos ALL RIGHTS RESERVED.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -24,32 +24,30 @@
  * 
  */
 
-package sonata.kernel.adaptor.wrapper.vpnaas;
+package sonata.kernel.adaptor.wrapper.vpnaas.heat;
 
-import sonata.kernel.adaptor.commons.NapObject;
-import sonata.kernel.adaptor.commons.QosObject;
-import sonata.kernel.adaptor.wrapper.WrapperBay;
-import sonata.kernel.adaptor.wrapper.WimWrapper;
-import sonata.kernel.adaptor.wrapper.WimWrapperConfiguration;
+import java.util.ArrayList;
+import java.util.Collections;
 
-public class WimVpnaasWrapper extends WimWrapper {
+public class HeatModel {
 
-  public WimVpnaasWrapper(WimWrapperConfiguration config) {
-    super(config);
+  private ArrayList<HeatResource> resources;
+
+  public HeatModel() {
+    this.resources = new ArrayList<HeatResource>();
   }
 
-  @Override
-  public boolean configureNetwork(String instanceId, String vlId, NapObject ingress, NapObject egress, QosObject qos, Boolean bidirectional) {
-
-    WrapperBay.getInstance().getWimRepo().writeServiceInstanceEntry(instanceId, this.getWimConfig().getUuid());
-    return true;
+  public void addResource(HeatResource res) {
+    this.resources.add(res);
   }
 
-  @Override
-  public boolean removeNetConfiguration(String instanceId, String vlId) {
+  public ArrayList<HeatResource> getResources() {
+    return this.resources;
+  }
 
-    WrapperBay.getInstance().getWimRepo().removeServiceInstanceEntry(instanceId);
-    return true;
+  public void prepare() {
+    Collections.sort(resources);
+    return;
   }
 
 }

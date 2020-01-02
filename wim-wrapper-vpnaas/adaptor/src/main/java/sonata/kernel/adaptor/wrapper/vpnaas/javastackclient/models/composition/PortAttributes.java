@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, THALES, NCSR Demokritos ALL RIGHTS RESERVED.
+ * Copyright (c) 2015 SONATA-NFV, UCL, NOKIA, NCSR Demokritos ALL RIGHTS RESERVED.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -20,36 +20,55 @@
  * would like to acknowledge the contributions of their colleagues of the SONATA partner consortium
  * (www.sonata-nfv.eu).
  *
- * @author Dario Valocchi (Ph.D.), UCL
+ * @author Adel Zaalouk (Ph.D.), NEC
  * 
  */
 
-package sonata.kernel.adaptor.wrapper.vpnaas;
+package sonata.kernel.adaptor.wrapper.vpnaas.javastackclient.models.composition;
 
-import sonata.kernel.adaptor.commons.NapObject;
-import sonata.kernel.adaptor.commons.QosObject;
-import sonata.kernel.adaptor.wrapper.WrapperBay;
-import sonata.kernel.adaptor.wrapper.WimWrapper;
-import sonata.kernel.adaptor.wrapper.WimWrapperConfiguration;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-public class WimVpnaasWrapper extends WimWrapper {
+import java.util.ArrayList;
+import java.util.HashMap;
 
-  public WimVpnaasWrapper(WimWrapperConfiguration config) {
-    super(config);
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class PortAttributes {
+
+  private ArrayList<HashMap<String, String>> fixed_ips;
+  private String id;
+  private String mac_address;
+  private String name;
+
+  public ArrayList<HashMap<String, String>> getFixed_ips() {
+    return fixed_ips;
   }
 
-  @Override
-  public boolean configureNetwork(String instanceId, String vlId, NapObject ingress, NapObject egress, QosObject qos, Boolean bidirectional) {
-
-    WrapperBay.getInstance().getWimRepo().writeServiceInstanceEntry(instanceId, this.getWimConfig().getUuid());
-    return true;
+  public String getId() {
+    return id;
   }
 
-  @Override
-  public boolean removeNetConfiguration(String instanceId, String vlId) {
-
-    WrapperBay.getInstance().getWimRepo().removeServiceInstanceEntry(instanceId);
-    return true;
+  public String getMac_address() {
+    return mac_address;
   }
 
+  public String getName() {
+    return name;
+  }
+
+
+  public void setFixed_ips(ArrayList<HashMap<String, String>> fixed_ips) {
+    this.fixed_ips = fixed_ips;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public void setMac_address(String mac_address) {
+    this.mac_address = mac_address;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 }

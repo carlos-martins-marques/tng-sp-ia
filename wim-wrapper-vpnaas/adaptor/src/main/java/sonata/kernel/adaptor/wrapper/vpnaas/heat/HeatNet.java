@@ -24,41 +24,76 @@
  * 
  */
 
-package sonata.kernel.adaptor.commons;
+package sonata.kernel.adaptor.wrapper.vpnaas.heat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class DeconfigureWanPayload {
+public class HeatNet {
 
-  @JsonProperty("service_instance_id")
-  private String serviceInstanceId;
 
-  @JsonProperty("wim_uuid")
-  private String wimUuid;
+  private String cidr;
 
-  @JsonProperty("vl_id")
-  private String vlId;
+  @JsonProperty("net_id")
+  private String netId;
 
-  public String getServiceInstanceId() {
-    return serviceInstanceId;
+  @JsonProperty("net_name")
+  private String netName;
+
+  @JsonProperty("segmentation_id")
+  private int segmentationId;
+
+  @JsonProperty("subnet_id")
+  private String subnetId;
+
+  @JsonProperty("subnet_name")
+  private String subnetName;
+
+  public String getCidr() {
+    return cidr;
   }
 
-  public String getWimUuid() {
-    return wimUuid;
+  public String getNetId() {
+    return netId;
   }
 
-  public String getVlId() {
-    return vlId;
-  }
-  public void setServiceInstanceId(String serviceInstanceId) {
-    this.serviceInstanceId = serviceInstanceId;
+  public String getNetName() {
+    return netName;
   }
 
-  public void setWimUuid(String wimUuid) {
-    this.wimUuid = wimUuid;
+  public int getSegmentationId() {
+    return segmentationId;
   }
 
-  public void setVlId(String vlId) {
-    this.vlId = vlId;
+  public String getSubnetId() {
+    return subnetId;
   }
+
+  public String getSubnetName() {
+    return subnetName;
+  }
+
+  public void setCidr(String cidr) {
+    this.cidr = cidr;
+  }
+
+  public void setNetId(String netId) {
+    this.netId = netId;
+  }
+
+  public void setNetName(String netName) {
+    this.netName = netName;
+  }
+
+  public void setSegmentationId(int segmentationId) {
+    this.segmentationId = segmentationId;
+  }
+
+  public void setSubnetId(String subnetId) {
+    this.subnetId = subnetId;
+  }
+
+  public void setSubnetName(String subnetName) {
+    this.subnetName = subnetName;
+  }
+
 }

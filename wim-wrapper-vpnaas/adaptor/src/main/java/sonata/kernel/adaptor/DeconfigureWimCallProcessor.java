@@ -65,7 +65,7 @@ public class DeconfigureWimCallProcessor extends AbstractCallProcessor {
       request = mapper.readValue(message.getBody(), DeconfigureWanPayload.class);
       Logger.info("payload parsed");
     } catch (Exception e) {
-      Logger.error("Error parsing the wan configure payload: " + e.getMessage(), e);
+      Logger.error("Error parsing the wan deconfigure payload: " + e.getMessage(), e);
       this.sendToMux(new ServicePlatformMessage(
           "{\"request_status\":\"fail\",\"message\":\"Payload parse error\"}", "application/json",
           message.getReplyTo(), message.getSid(), null));
@@ -75,13 +75,12 @@ public class DeconfigureWimCallProcessor extends AbstractCallProcessor {
     Logger.debug("Received request: ");
     Logger.debug(message.getBody());
     String instanceId = request.getServiceInstanceId();
+    String wimUuid = request.getWimUuid();
+    String vlId = request.getVlId();
 
-    String[] wimList = WrapperBay.getInstance().getWimRepo().getWimUuidFromInstance(instanceId);
-    
-    for(String wimUuid: wimList){
-      WimWrapper wim = (WimWrapper) WrapperBay.getInstance().getWimRecordFromWimUuid(wimUuid).getWimWrapper();
-      wim.removeNetConfiguration(instanceId);
-    }
+    WimWrapper wim = (WimWrapper) WrapperBay.getInstance().getWimRecordFromWimUuid(wimUuid).getWimWrapper();
+    wim.removeNetConfiguration(instanceId, vlId);
+
 
     this.sendToMux(new ServicePlatformMessage(
       "{\"request_status\":\"COMPLETED\",\"message\":\"\"}", "application/json",
