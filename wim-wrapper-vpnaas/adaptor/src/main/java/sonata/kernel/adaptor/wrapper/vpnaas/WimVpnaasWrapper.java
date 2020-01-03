@@ -41,14 +41,14 @@ public class WimVpnaasWrapper extends WimWrapper {
   @Override
   public boolean configureNetwork(String instanceId, String vlId, NapObject ingress, NapObject egress, QosObject qos, Boolean bidirectional) {
 
-    WrapperBay.getInstance().getWimRepo().writeServiceInstanceEntry(instanceId, this.getWimConfig().getUuid());
+    WrapperBay.getInstance().getWimRepo().writeServiceInstanceEntry(instanceId, vlId, this.getWimConfig().getUuid());
     return true;
   }
 
   @Override
   public boolean removeNetConfiguration(String instanceId, String vlId) {
 
-    WrapperBay.getInstance().getWimRepo().removeServiceInstanceEntry(instanceId);
+    WrapperBay.getInstance().getWimRepo().removeServiceInstanceEntry(instanceId, vlId);
     return true;
   }
 

@@ -134,7 +134,7 @@ public class WimRepo {
             + " PASS TEXT," + " AUTHKEY TEXT);";
         stmt.executeUpdate(sql);
         sql = "CREATE TABLE service_instances " + "(" + "INSTANCE_UUID TEXT PRIMARY KEY NOT NULL,"
-                + " WIM_UUID TEXT NOT NULL" + ");";
+                + " VL_ID TEXT," + " WIM_UUID TEXT NOT NULL" + ");";
         stmt.executeUpdate(sql);
         sql = "CREATE TABLE attached_vim " + "(VIM_UUID TEXT PRIMARY KEY NOT NULL, "
             + "VIM_ADDRESS TEXT NOT NULL, "

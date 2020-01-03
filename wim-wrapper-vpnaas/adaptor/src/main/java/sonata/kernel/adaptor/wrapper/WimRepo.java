@@ -133,9 +133,8 @@ public class WimRepo {
             + " VENDOR TEXT NOT NULL," + " ENDPOINT TEXT NOT NULL," + " USERNAME TEXT NOT NULL,"
             + " PASS TEXT," + " AUTHKEY TEXT);";
         stmt.executeUpdate(sql);
-        sql = "CREATE TABLE service_instances " + "(" + "INSTANCE_UUID TEXT NOT NULL,"
-                + " WIM_INSTANCE_UUID TEXT NOT NULL," + " WIM_INSTANCE_NAME TEXT NOT NULL,"
-                + " WIM_UUID TEXT NOT NULL," + " PRIMARY KEY (INSTANCE_UUID, WIM_UUID)" + ");";
+        sql = "CREATE TABLE service_instances " + "(" + "INSTANCE_UUID TEXT PRIMARY KEY NOT NULL,"
+                + " VL_ID TEXT," + " WIM_UUID TEXT NOT NULL" + ");";
         stmt.executeUpdate(sql);
         sql = "CREATE TABLE attached_vim " + "(VIM_UUID TEXT PRIMARY KEY NOT NULL, "
             + "VIM_ADDRESS TEXT NOT NULL, "
@@ -865,7 +864,7 @@ public class WimRepo {
    *
    * @return true for process success
    */
-  public boolean removeServiceInstanceEntry(String instanceUuid) {
+  public boolean removeServiceInstanceEntry(String instanceUuid, String vlId) {
     boolean out = true;
 
     Connection connection = null;
@@ -879,9 +878,10 @@ public class WimRepo {
                       prop.getProperty("user"), prop.getProperty("pass"));
       connection.setAutoCommit(false);
 
-      String sql = "DELETE FROM service_instances WHERE INSTANCE_UUID=?;";
+      String sql = "DELETE FROM service_instances WHERE INSTANCE_UUID=? AND VL_ID=?;";
       stmt = connection.prepareStatement(sql);
       stmt.setString(1, instanceUuid);
+      stmt.setString(1, vlId);
       stmt.executeUpdate();
       connection.commit();
     } catch (SQLException e) {
@@ -918,7 +918,7 @@ public class WimRepo {
    *
    * @return true for process success
    */
-  public boolean writeServiceInstanceEntry(String instanceUuid, String wimUuid) {
+  public boolean writeServiceInstanceEntry(String instanceUuid, String vlId, String wimUuid) {
     boolean out = true;
 
     Connection connection = null;
@@ -933,11 +933,12 @@ public class WimRepo {
       connection.setAutoCommit(false);
 
       String sql =
-              "INSERT INTO service_instances  (INSTANCE_UUID, WIM_UUID) "
-                      + "VALUES (?, ?);";
+              "INSERT INTO service_instances  (INSTANCE_UUID, VL_ID, WIM_UUID) "
+                      + "VALUES (?, ?, ?);";
       stmt = connection.prepareStatement(sql);
       stmt.setString(1, instanceUuid);
-      stmt.setString(2, wimUuid);
+      stmt.setString(2, vlId);
+      stmt.setString(3, wimUuid);
       stmt.executeUpdate();
       connection.commit();
     } catch (SQLException e) {
