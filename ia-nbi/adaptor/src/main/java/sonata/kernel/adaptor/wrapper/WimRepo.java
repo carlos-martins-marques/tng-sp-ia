@@ -133,8 +133,9 @@ public class WimRepo {
             + " VENDOR TEXT NOT NULL," + " ENDPOINT TEXT NOT NULL," + " USERNAME TEXT,"
             + " PASS TEXT," + " AUTHKEY TEXT);";
         stmt.executeUpdate(sql);
-        sql = "CREATE TABLE service_instances " + "(" + "INSTANCE_UUID TEXT PRIMARY KEY NOT NULL,"
-                + " VL_ID TEXT," + " WIM_UUID TEXT NOT NULL" + ");";
+        sql = "CREATE TABLE service_instances " + "(" + "INSTANCE_UUID TEXT NOT NULL,"
+            + " VL_ID TEXT," + " INGRESS TEXT," + " EGRESS TEXT," + " WIM_UUID TEXT NOT NULL,"
+            + " PRIMARY KEY (INSTANCE_UUID, VL_ID)" + ");";
         stmt.executeUpdate(sql);
         sql = "CREATE TABLE attached_vim " + "(VIM_UUID TEXT PRIMARY KEY NOT NULL, "
             + "VIM_ADDRESS TEXT NOT NULL, "

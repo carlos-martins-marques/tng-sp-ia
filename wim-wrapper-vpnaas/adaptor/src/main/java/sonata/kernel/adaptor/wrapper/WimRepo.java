@@ -133,8 +133,9 @@ public class WimRepo {
             + " VENDOR TEXT NOT NULL," + " ENDPOINT TEXT NOT NULL," + " USERNAME TEXT NOT NULL,"
             + " PASS TEXT," + " AUTHKEY TEXT);";
         stmt.executeUpdate(sql);
-        sql = "CREATE TABLE service_instances " + "(" + "INSTANCE_UUID TEXT PRIMARY KEY NOT NULL,"
-                + " VL_ID TEXT," + " WIM_UUID TEXT NOT NULL" + ");";
+        sql = "CREATE TABLE service_instances " + "(" + "INSTANCE_UUID TEXT NOT NULL,"
+            + " VL_ID TEXT," + " INGRESS TEXT," + " EGRESS TEXT," + " WIM_UUID TEXT NOT NULL,"
+            + " PRIMARY KEY (INSTANCE_UUID, VL_ID)" + ");";
         stmt.executeUpdate(sql);
         sql = "CREATE TABLE attached_vim " + "(VIM_UUID TEXT PRIMARY KEY NOT NULL, "
             + "VIM_ADDRESS TEXT NOT NULL, "
@@ -796,14 +797,15 @@ public class WimRepo {
   }
 
   /**
-   * Return a list of the WIMs hosting at least one Service Instance.
+   * Retrieve the wim service configuration from the repository.
    *
    * @param instanceUuid the UUID that identifies the Service Instance
-   * @return an array of String objecst representing the UUID of the WIMs
+   * @param vlId the ID that identifies the Virtual Link
+   * @return a WimServiceConfiguration representing the service configuration
    */
-  public String[] getWimUuidFromInstance(String instanceUuid) {
+  public WimServiceConfiguration getServiceConfigurationFromInstance(String instanceUuid, String vlId) {
 
-    String[] output = null;
+    WimServiceConfiguration output = null;
 
     Connection connection = null;
     PreparedStatement stmt = null;
@@ -818,16 +820,29 @@ public class WimRepo {
       connection.setAutoCommit(false);
 
       stmt = connection
-              .prepareStatement("SELECT WIM_UUID FROM service_instances  WHERE INSTANCE_UUID=?;");
+              .prepareStatement("SELECT * FROM service_instances  WHERE INSTANCE_UUID=? AND VL_ID=?;");
       stmt.setString(1, instanceUuid);
+      stmt.setString(2, vlId);
       rs = stmt.executeQuery();
       ArrayList<String> uuids = new ArrayList<String>();
 
       while (rs.next()) {
         uuids.add(rs.getString("WIM_UUID"));
+
+        String wimUuid = rs.getString("WIM_UUID");
+        String ingress = rs.getString("INGRESS");
+        String egress = rs.getString("EGRESS");
+
+
+        WimServiceConfiguration config = new WimServiceConfiguration();
+        config.setWimUuid(wimUuid);
+        config.setInstanceUuid(instanceUuid);
+        config.setVlId(vlId);
+        config.setIngress(ingress);
+        config.setEgress(egress);
+
+        output = config;
       }
-      output = new String[uuids.size()];
-      output = uuids.toArray(output);
 
     } catch (SQLException e) {
       Logger.error(e.getMessage());
@@ -881,7 +896,7 @@ public class WimRepo {
       String sql = "DELETE FROM service_instances WHERE INSTANCE_UUID=? AND VL_ID=?;";
       stmt = connection.prepareStatement(sql);
       stmt.setString(1, instanceUuid);
-      stmt.setString(1, vlId);
+      stmt.setString(2, vlId);
       stmt.executeUpdate();
       connection.commit();
     } catch (SQLException e) {
@@ -918,7 +933,7 @@ public class WimRepo {
    *
    * @return true for process success
    */
-  public boolean writeServiceInstanceEntry(String instanceUuid, String vlId, String wimUuid) {
+  public boolean writeServiceInstanceEntry(String instanceUuid, String vlId, String ingress, String egress, String wimUuid) {
     boolean out = true;
 
     Connection connection = null;
@@ -933,12 +948,14 @@ public class WimRepo {
       connection.setAutoCommit(false);
 
       String sql =
-              "INSERT INTO service_instances  (INSTANCE_UUID, VL_ID, WIM_UUID) "
-                      + "VALUES (?, ?, ?);";
+              "INSERT INTO service_instances  (INSTANCE_UUID, VL_ID, INGRESS, EGRESS, WIM_UUID) "
+                      + "VALUES (?, ?, ?, ?, ?);";
       stmt = connection.prepareStatement(sql);
       stmt.setString(1, instanceUuid);
       stmt.setString(2, vlId);
-      stmt.setString(3, wimUuid);
+      stmt.setString(3, ingress);
+      stmt.setString(4, egress);
+      stmt.setString(5, wimUuid);
       stmt.executeUpdate();
       connection.commit();
     } catch (SQLException e) {
@@ -960,7 +977,7 @@ public class WimRepo {
         out = false;
       }
     }
-    if (!out) {
+    if (out) {
       Logger.info("Service instance written successfully");
     }
 

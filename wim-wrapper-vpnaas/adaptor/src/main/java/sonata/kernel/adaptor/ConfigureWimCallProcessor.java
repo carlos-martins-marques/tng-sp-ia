@@ -83,11 +83,16 @@ public class ConfigureWimCallProcessor extends AbstractCallProcessor {
     QosObject qos = request.getQos();
     Boolean bidirectional = request.getBidirectional();
 
+    if (!ingress.getLocation().equals(egress.getLocation())) {
+      WimWrapper wim =
+          (WimWrapper) WrapperBay.getInstance().getWimRecordFromWimUuid(wimUuid).getWimWrapper();
 
-    WimWrapper wim =
-        (WimWrapper) WrapperBay.getInstance().getWimRecordFromWimUuid(wimUuid).getWimWrapper();
+      wim.configureNetwork(instanceId, vlId, ingress, egress, qos, bidirectional);
+    } else {
+      Logger.warn("VPN requested for interconnect the same vim uuid " + ingress.getLocation() + " . Message ignored.");
+    }
 
-    wim.configureNetwork(instanceId, vlId, ingress, egress, qos, bidirectional);
+
 
 
     this.sendToMux(new ServicePlatformMessage("{\"request_status\":\"COMPLETED\",\"message\":\"\"}",
