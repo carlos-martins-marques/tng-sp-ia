@@ -1169,6 +1169,44 @@ public class JavaStackCore {
     return response;
   }
 
+  /**
+   * NEUTRON method to get router by given routerId
+   *
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse getRouter(String routerId) throws IOException {
+    HttpGet getRouters= null;
+    HttpResponse response = null;
+
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    HttpResponseFactory factory = new DefaultHttpResponseFactory();
+
+    if (isAuthenticated) {
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Network.getPORT());
+      buildUrl.append(String.format("/%s/routers/%s", Network.getVERSION(), routerId));
+
+      // Logger.debug("[JavaStack] Authenticating client...");
+      getRouters = new HttpGet(buildUrl.toString());
+      getRouters.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+      Logger.debug("[JavaStack] " + getRouters.toString());
+
+      response = httpClient.execute(getRouters);
+      Logger.debug("[JavaStack] GET Routers response:");
+      Logger.debug(response.toString());
+      int status_code = response.getStatusLine().getStatusCode();
+      return (status_code == 200)
+          ? response
+          : factory.newHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, status_code,
+          "List Routers  Failed with Status: " + status_code), null);
+    }
+    return response;
+  }
+
 
   /**
    * NEUTRON method to list Subnet Pools
@@ -1300,6 +1338,82 @@ public class JavaStackCore {
           "You must Authenticate before issuing this request, please re-authenticate. ");
     }
     return httpClient.execute(createSubnetPool);
+  }
+
+  /**
+   * NEUTRON method to get floating IP details by given FIP
+   *
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse getFloatingIp(String fIp) throws IOException {
+    HttpGet getFloatingIp= null;
+    HttpResponse response = null;
+
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    HttpResponseFactory factory = new DefaultHttpResponseFactory();
+
+    if (isAuthenticated) {
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Network.getPORT());
+      buildUrl.append(String.format("/%s/floatingips?floating_ip_address=%s", Network.getVERSION(), fIp));
+
+      // Logger.debug("[JavaStack] Authenticating client...");
+      getFloatingIp = new HttpGet(buildUrl.toString());
+      getFloatingIp.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+      Logger.debug("[JavaStack] " + getFloatingIp.toString());
+
+      response = httpClient.execute(getFloatingIp);
+      Logger.debug("[JavaStack] GET Floating IP response:");
+      Logger.debug(response.toString());
+      int status_code = response.getStatusLine().getStatusCode();
+      return (status_code == 200)
+          ? response
+          : factory.newHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, status_code,
+          "Get Floating IP  Failed with Status: " + status_code), null);
+    }
+    return response;
+  }
+
+  /**
+   * NEUTRON method to get subnet details by given network id
+   *
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse getSubnet(String network_id) throws IOException {
+    HttpGet getNetworkId= null;
+    HttpResponse response = null;
+
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    HttpResponseFactory factory = new DefaultHttpResponseFactory();
+
+    if (isAuthenticated) {
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Network.getPORT());
+      buildUrl.append(String.format("/%s/subnets?network_id=%s", Network.getVERSION(), network_id));
+
+      // Logger.debug("[JavaStack] Authenticating client...");
+      getNetworkId = new HttpGet(buildUrl.toString());
+      getNetworkId.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+      Logger.debug("[JavaStack] " + getNetworkId.toString());
+
+      response = httpClient.execute(getNetworkId);
+      Logger.debug("[JavaStack] GET Subnet response:");
+      Logger.debug(response.toString());
+      int status_code = response.getStatusLine().getStatusCode();
+      return (status_code == 200)
+          ? response
+          : factory.newHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, status_code,
+          "Get Subnet  Failed with Status: " + status_code), null);
+    }
+    return response;
   }
 
 }

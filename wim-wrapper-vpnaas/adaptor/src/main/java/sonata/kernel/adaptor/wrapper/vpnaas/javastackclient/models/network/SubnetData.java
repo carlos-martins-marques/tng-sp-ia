@@ -32,41 +32,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RoutersPropertyExternalGatewayInfo {
+public class SubnetData {
 
-  @JsonProperty("network_id")
-  private String networkId;
+  @JsonProperty("subnets")
+  private ArrayList<SubnetProperties> subnet;
 
-  @JsonProperty("external_fixed_ips")
-  private ArrayList<RoutersPropertyExternalFixedIps> externalFixedIps;
-
-  public String getNetworkId() {
-    return networkId;
+  public ArrayList<SubnetProperties> getSubnet() {
+    return subnet;
   }
 
-  public ArrayList<RoutersPropertyExternalFixedIps> getExternalFixedIps() {
-    return externalFixedIps;
-  }
-
-
-
-  public void setNetworkId(String networkId) {
-    this.networkId = networkId;
-  }
-
-  public void setExternalFixedIps(ArrayList<RoutersPropertyExternalFixedIps> externalFixedIps) {
-    this.externalFixedIps = externalFixedIps;
-  }
-
-
-
-
-  @Override
-  public String toString() {
-    String out = "";
-
-    out += networkId + " " + getExternalFixedIps().toString();
-
-    return out;
+  public void setSubnet(ArrayList<SubnetProperties> subnet) {
+    this.subnet = subnet;
   }
 }

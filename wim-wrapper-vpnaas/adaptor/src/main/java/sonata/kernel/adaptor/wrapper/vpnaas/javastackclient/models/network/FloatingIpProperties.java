@@ -29,35 +29,52 @@ package sonata.kernel.adaptor.wrapper.vpnaas.javastackclient.models.network;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RoutersPropertyExternalGatewayInfo {
+public class FloatingIpProperties {
 
-  @JsonProperty("network_id")
-  private String networkId;
+  private String id;
 
-  @JsonProperty("external_fixed_ips")
-  private ArrayList<RoutersPropertyExternalFixedIps> externalFixedIps;
+  @JsonProperty("floating_ip_address")
+  private String floatingIpAddress;
 
-  public String getNetworkId() {
-    return networkId;
+  @JsonProperty("fixed_ip_address")
+  private String fixedIpAddress;
+
+  @JsonProperty("port_details")
+  private PortsProperty portDetails;
+
+  public String getId() {
+    return id;
   }
 
-  public ArrayList<RoutersPropertyExternalFixedIps> getExternalFixedIps() {
-    return externalFixedIps;
+  public String getFloatingIpAddress() {
+    return floatingIpAddress;
+  }
+
+  public String getFixedIpAddress() {
+    return fixedIpAddress;
+  }
+
+  public PortsProperty getPortDetails() {
+    return portDetails;
   }
 
 
-
-  public void setNetworkId(String networkId) {
-    this.networkId = networkId;
+  public void setId(String id) {
+    this.id = id;
   }
 
-  public void setExternalFixedIps(ArrayList<RoutersPropertyExternalFixedIps> externalFixedIps) {
-    this.externalFixedIps = externalFixedIps;
+  public void setFloatingIpAddress(String floatingIpAddress) {
+    this.floatingIpAddress = floatingIpAddress;
   }
 
+  public void setFixedIpAddress(String fixedIpAddress) {
+    this.fixedIpAddress = fixedIpAddress;
+  }
+
+  public void setPortDetails(PortsProperty portDetails) {
+    this.portDetails = portDetails;
+  }
 
 
 
@@ -65,7 +82,7 @@ public class RoutersPropertyExternalGatewayInfo {
   public String toString() {
     String out = "";
 
-    out += networkId + " " + getExternalFixedIps().toString();
+    out += id + "   " + floatingIpAddress + " " + fixedIpAddress + " " + portDetails.toString() + " ";
 
     return out;
   }

@@ -29,33 +29,39 @@ package sonata.kernel.adaptor.wrapper.vpnaas.javastackclient.models.network;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RoutersPropertyExternalGatewayInfo {
+public class SubnetProperties {
+
+  private String id;
 
   @JsonProperty("network_id")
   private String networkId;
 
-  @JsonProperty("external_fixed_ips")
-  private ArrayList<RoutersPropertyExternalFixedIps> externalFixedIps;
+  private String cidr;
+
+  public String getId() {
+    return id;
+  }
 
   public String getNetworkId() {
     return networkId;
   }
 
-  public ArrayList<RoutersPropertyExternalFixedIps> getExternalFixedIps() {
-    return externalFixedIps;
+  public String getCidr() {
+    return cidr;
   }
 
 
+  public void setId(String id) {
+    this.id = id;
+  }
 
   public void setNetworkId(String networkId) {
     this.networkId = networkId;
   }
 
-  public void setExternalFixedIps(ArrayList<RoutersPropertyExternalFixedIps> externalFixedIps) {
-    this.externalFixedIps = externalFixedIps;
+  public void setCidr(String cidr) {
+    this.cidr = cidr;
   }
 
 
@@ -65,7 +71,7 @@ public class RoutersPropertyExternalGatewayInfo {
   public String toString() {
     String out = "";
 
-    out += networkId + " " + getExternalFixedIps().toString();
+    out += id + "   " + networkId + " " + cidr + " ";
 
     return out;
   }

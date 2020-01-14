@@ -29,43 +29,25 @@ package sonata.kernel.adaptor.wrapper.vpnaas.javastackclient.models.network;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RoutersPropertyExternalGatewayInfo {
+public class PortsProperty {
 
   @JsonProperty("network_id")
   private String networkId;
-
-  @JsonProperty("external_fixed_ips")
-  private ArrayList<RoutersPropertyExternalFixedIps> externalFixedIps;
 
   public String getNetworkId() {
     return networkId;
   }
 
-  public ArrayList<RoutersPropertyExternalFixedIps> getExternalFixedIps() {
-    return externalFixedIps;
-  }
-
-
-
   public void setNetworkId(String networkId) {
     this.networkId = networkId;
   }
-
-  public void setExternalFixedIps(ArrayList<RoutersPropertyExternalFixedIps> externalFixedIps) {
-    this.externalFixedIps = externalFixedIps;
-  }
-
-
-
 
   @Override
   public String toString() {
     String out = "";
 
-    out += networkId + " " + getExternalFixedIps().toString();
+    out += networkId + " ";
 
     return out;
   }

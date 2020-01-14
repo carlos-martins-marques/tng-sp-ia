@@ -1049,6 +1049,104 @@ public class VimRepo {
   }
 
   /**
+   * Retrieve the vim configuration with the specified UUID from the repository.
+   *
+   * @param uuid the UUID of the vim to retrieve
+   *
+   * @return the VimWrapperConfiguration representing the vim, null if the vim is not registered in the
+   *         repository
+   */
+  public VimWrapperConfiguration getVimConfig(String uuid) {
+
+    VimWrapperConfiguration output = null;
+
+    Connection connection = null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    try {
+      Class.forName("org.postgresql.Driver");
+      connection =
+          DriverManager.getConnection(
+              "jdbc:postgresql://" + prop.getProperty("repo_host") + ":"
+                  + prop.getProperty("repo_port") + "/" + "vimregistry",
+              prop.getProperty("user"), prop.getProperty("pass"));
+      connection.setAutoCommit(false);
+
+      stmt = connection.prepareStatement("SELECT * FROM VIM WHERE UUID=?;");
+      stmt.setString(1, uuid);
+      rs = stmt.executeQuery();
+
+      if (rs.next()) {
+        String stringWrapperType = rs.getString("TYPE");
+        WrapperType wrapperType = WrapperType.getByName(stringWrapperType);
+        String vendorString = rs.getString("VENDOR");
+        String urlString = rs.getString("ENDPOINT");
+        String user = rs.getString("USERNAME");
+        String pass = rs.getString("PASS");
+        String domain = rs.getString("DOMAIN");
+        String configuration = rs.getString("CONFIGURATION");
+        String city = rs.getString("CITY");
+        String country = rs.getString("COUNTRY");
+        String key = rs.getString("AUTHKEY");
+        String name = rs.getString("NAME");
+
+        VimWrapperConfiguration config = new VimWrapperConfiguration();
+        config.setUuid(uuid);
+        config.setWrapperType(wrapperType);
+        config.setConfiguration(configuration);
+        config.setCity(city);
+        config.setCountry(country);
+        config.setVimEndpoint(urlString);
+        config.setAuthUserName(user);
+        config.setAuthPass(pass);
+        config.setDomain(domain);
+        config.setAuthKey(key);
+        config.setName(name);
+
+        if (wrapperType.equals(WrapperType.COMPUTE)) {
+          VimVendor vendor = ComputeVimVendor.getByName(vendorString);
+          config.setVimVendor(vendor);
+        } else if (wrapperType.equals(WrapperType.NETWORK)) {
+          VimVendor vendor = NetworkVimVendor.getByName(vendorString);
+          config.setVimVendor(vendor);
+        } else if (wrapperType.equals(WrapperType.ENDPOINT)) {
+          VimVendor vendor = EndpointVimVendor.getByName(vendorString);
+          config.setVimVendor(vendor);
+        }
+        output = config;
+
+      } else {
+        output = null;
+      }
+    } catch (SQLException e) {
+      Logger.error(e.getMessage());
+      output = null;
+    } catch (ClassNotFoundException e) {
+      Logger.error(e.getMessage(), e);
+      output = null;
+    } finally {
+      try {
+        if (stmt != null) {
+          stmt.close();
+        }
+        if (rs != null) {
+          rs.close();
+        }
+        if (connection != null) {
+          connection.close();
+        }
+      } catch (SQLException e) {
+        Logger.error(e.getMessage());
+        output = null;
+
+      }
+    }
+    return output;
+
+  }
+
+
+  /**
    * @param uuid
    */
   public boolean removeNetworkVimLink(String networkingUuid) {

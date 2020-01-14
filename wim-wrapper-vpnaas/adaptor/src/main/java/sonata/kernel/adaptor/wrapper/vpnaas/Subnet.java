@@ -30,56 +30,57 @@ package sonata.kernel.adaptor.wrapper.vpnaas;
 
 import org.slf4j.LoggerFactory;
 
-public class Router {
+public class Subnet {
 
   private static final org.slf4j.Logger Logger =
-          LoggerFactory.getLogger(Router.class);
+          LoggerFactory.getLogger(Subnet.class);
 
-  private String name;
+  private String networkId;
 
   private String id;
 
-  private String ip;
+  private String cidr;
 
 
   /**
-   * Basic router constructor.
+   * Basic subnet constructor.
    *
-   * @param name the name of this router
-   * @param id the router
-   * @param ip the router
+   * @param networkId the id of the network
+   * @param id the subnet
+   * @param cidr the subnet
 
    */
-  public Router(String name, String id, String ip) {
+  public Subnet(String networkId, String id, String cidr) {
     super();
-    this.name = name;
+    this.networkId = networkId;
     this.id = id;
-    this.ip = ip;
+    this.cidr = cidr;
 
   }
 
-  public String getName() {
-    return name;
+  public String getNetworkId() {
+    return networkId;
   }
 
   public String getId() {
     return id;
   }
 
-  public String getIp() {
-    return ip;
+  public String getCidr() {
+    return cidr;
   }
 
-  public void setName(String name) {
-    this.name = name;
+
+  public void setNetworkId(String networkId) {
+    this.networkId = networkId;
   }
 
   public void setId(String id) {
     this.id = id;
   }
 
-  public void setIp(String ip) {
-    this.ip = ip;
+  public void setCidr(String cidr) {
+    this.cidr = cidr;
   }
 
 }

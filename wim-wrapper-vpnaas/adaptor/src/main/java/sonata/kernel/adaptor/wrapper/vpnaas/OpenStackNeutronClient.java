@@ -171,7 +171,7 @@ public class OpenStackNeutronClient {
           Logger.info(input_router.getId() + ": " + input_router.getName() + ": " + input_router.getExternalGatewayInfo().getNetworkId());
 
           if (input_router.getExternalGatewayInfo().getNetworkId().equals(network)) {
-            output_router = new Router(input_router.getName(), input_router.getId());
+            output_router = new Router(input_router.getName(), input_router.getId(),null);
             output_routers.add(output_router);
           }
         }
@@ -186,6 +186,74 @@ public class OpenStackNeutronClient {
     } else {
       return output_routers;
     }
+
+  }
+
+  /**
+   * Get the Router for the given router ID.
+   *
+   * @return the Router
+   */
+  public Router getRouter(String routerId) {
+
+    Router output_router = null;
+
+    Logger.info("Getting router");
+    try {
+      mapper = new ObjectMapper();
+      String routerString =
+          JavaStackUtils.convertHttpResponseToString(javaStack.getRouter(routerId));
+      Logger.info(routerString);
+      RouterData inputRouter = mapper.readValue(routerString, RouterData.class);
+      Logger.info(inputRouter.getRouter().toString());
+      RoutersProperties inputRouterProp = inputRouter.getRouter();
+      Logger.info(inputRouterProp.getId() + ": " + inputRouterProp.getName() + ": " + inputRouterProp.getExternalGatewayInfo().getExternalFixedIps().get(0).getIpAddress());
+
+      output_router = new Router(inputRouterProp.getName(), inputRouterProp.getId(),inputRouterProp.getExternalGatewayInfo().getExternalFixedIps().get(0).getIpAddress());
+
+    } catch (Exception e) {
+      Logger.error("Runtime error getting openstack routers" + " error message: " + e.getMessage());
+    }
+
+    return output_router;
+
+  }
+
+  /**
+   * Get the Subnet for the given floating IP.
+   *
+   * @return the Subnet
+   */
+  public Subnet getSubnet(String fIp) {
+
+    Subnet output_subnet = null;
+
+    Logger.info("Getting Subnet");
+    try {
+      mapper = new ObjectMapper();
+      String FloatingIpString =
+          JavaStackUtils.convertHttpResponseToString(javaStack.getFloatingIp(fIp));
+      Logger.info(FloatingIpString);
+      FloatingIpData inputFloatingIp = mapper.readValue(FloatingIpString, FloatingIpData.class);
+      Logger.info(inputFloatingIp.getFloatingIp().toString());
+      String networkId = inputFloatingIp.getFloatingIp().get(0).getPortDetails().getNetworkId();
+
+      String SubnetString =
+          JavaStackUtils.convertHttpResponseToString(javaStack.getSubnet(networkId));
+      Logger.info(SubnetString);
+      SubnetData inputSubnet = mapper.readValue(SubnetString, SubnetData.class);
+      Logger.info(inputSubnet.getSubnet().toString());
+
+      SubnetProperties inputSubnetProp = inputSubnet.getSubnet().get(0);
+      Logger.info(inputSubnetProp.getId() + ": " + inputSubnetProp.getNetworkId() + ": " + inputSubnetProp.getCidr());
+
+      output_subnet = new Subnet(inputSubnetProp.getNetworkId(), inputSubnetProp.getId(),inputSubnetProp.getCidr());
+
+    } catch (Exception e) {
+      Logger.error("Runtime error getting openstack subnet" + " error message: " + e.getMessage());
+    }
+
+    return output_subnet;
 
   }
 

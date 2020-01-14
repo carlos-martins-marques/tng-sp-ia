@@ -20,53 +20,50 @@
  * would like to acknowledge the contributions of their colleagues of the SONATA partner consortium
  * (www.sonata-nfv.eu).
  *
- * @author Adel Zaalouk (Ph.D.), NEC
+ * @author Dario Valocchi (Ph.D.), UCL
  * 
  */
 
-package sonata.kernel.adaptor.wrapper.vpnaas.javastackclient.models.network;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+package sonata.kernel.adaptor.wrapper;
 
 import java.util.ArrayList;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class RoutersPropertyExternalGatewayInfo {
+public enum EndpointVimVendor implements VimVendor {
+  ENDPOINT("endpoint");
 
-  @JsonProperty("network_id")
-  private String networkId;
 
-  @JsonProperty("external_fixed_ips")
-  private ArrayList<RoutersPropertyExternalFixedIps> externalFixedIps;
+  public static EndpointVimVendor getByName(String name) {
+    for (EndpointVimVendor vendor : values()) {
+      if (vendor.getName().toUpperCase().equals(name.toUpperCase())) {
+        return vendor;
+      }
+    }
 
-  public String getNetworkId() {
-    return networkId;
+    throw new IllegalArgumentException(name + " is not a valid EndpointVimVendor");
   }
 
-  public ArrayList<RoutersPropertyExternalFixedIps> getExternalFixedIps() {
-    return externalFixedIps;
+  private final String name;
+
+  EndpointVimVendor(String name) {
+    this.name = name;
   }
-
-
-
-  public void setNetworkId(String networkId) {
-    this.networkId = networkId;
-  }
-
-  public void setExternalFixedIps(ArrayList<RoutersPropertyExternalFixedIps> externalFixedIps) {
-    this.externalFixedIps = externalFixedIps;
-  }
-
-
-
 
   @Override
   public String toString() {
-    String out = "";
-
-    out += networkId + " " + getExternalFixedIps().toString();
-
-    return out;
+    return this.name;
   }
+
+  private String getName() {
+    return this.toString();
+  }
+
+  public static ArrayList<String> getPossibleVendors() {
+    ArrayList<String> PossibleVendors = new ArrayList<String>();
+    for (EndpointVimVendor vendor : values()) {
+      PossibleVendors.add(vendor.getName().toLowerCase());
+    }
+
+    return PossibleVendors;
+  }
+
 }
