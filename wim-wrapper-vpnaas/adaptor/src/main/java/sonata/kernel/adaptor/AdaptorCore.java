@@ -140,8 +140,8 @@ public class AdaptorCore {
     dispatcher = new AdaptorDispatcher(dispatcherQueue, mux, this);
     northConsumer = consumer;
     northProducer = producer;
-    //VimRepo vimRepo = new VimRepo();
-    //WrapperBay.getInstance().setVimRepo(vimRepo);
+    VimRepo vimRepo = new VimRepo();
+    WrapperBay.getInstance().setVimRepo(vimRepo);
     WimRepo wimRepo = new WimRepo();
     WrapperBay.getInstance().setWimRepo(wimRepo);
     status = "READY";
@@ -171,8 +171,8 @@ public class AdaptorCore {
     dispatcher = new AdaptorDispatcher(dispatcherQueue, mux, this);
 
     // - Wrapper bay connection with the Database.
-    //VimRepo vimRepo = new VimRepo();
-    //WrapperBay.getInstance().setVimRepo(vimRepo);
+    VimRepo vimRepo = new VimRepo();
+    WrapperBay.getInstance().setVimRepo(vimRepo);
     WimRepo wimRepo = new WimRepo();
     WrapperBay.getInstance().setWimRepo(wimRepo);
 
