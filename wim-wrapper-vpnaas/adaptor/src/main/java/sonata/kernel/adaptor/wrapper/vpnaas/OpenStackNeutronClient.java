@@ -349,4 +349,441 @@ public class OpenStackNeutronClient {
     return uuid;
   }
 
+  /**
+   * Get the Ike Policy for the given name.
+   *
+   * @return the Ike Policy Id
+   */
+  public String getIkePolicy(String name) {
+
+    String outputIkePolicyId = null;
+
+    Logger.info("Getting Ike Policy");
+    try {
+      mapper = new ObjectMapper();
+      String ikePolicyString =
+          JavaStackUtils.convertHttpResponseToString(javaStack.getIkePolicy(name));
+      Logger.info(ikePolicyString);
+      IkePoliciesData inputIkePolicy = mapper.readValue(ikePolicyString, IkePoliciesData.class);
+      Logger.info(inputIkePolicy.getIkePolicy().toString());
+
+      IkePolicyProperties inputIkePolicyProp = inputIkePolicy.getIkePolicy().get(0);
+      Logger.info(inputIkePolicyProp.getId() + ": " + inputIkePolicyProp.getName());
+
+      outputIkePolicyId = inputIkePolicyProp.getId();
+
+    } catch (Exception e) {
+      Logger.error("Runtime error getting openstack ike policy" + " error message: " + e.getMessage());
+    }
+
+    return outputIkePolicyId;
+
+  }
+
+  /**
+   * Create an Ike Policy
+   *
+   * @param name - the name
+   * @param lifetime - Ike lifetime in seconds
+   * @return - the uuid of the created Ike Policy, if the process failed the returned value is null
+   */
+  public String createIkePolicy(String name, String lifetime) {
+    String uuid = null;
+
+    Logger.info("Creating Ike Policy: " + name);
+
+    try {
+      mapper = new ObjectMapper();
+      String createIkePolicy =
+          JavaStackUtils.convertHttpResponseToString(javaStack.createIkePolicy(name,lifetime));
+      Logger.info(createIkePolicy);
+      IkePolicyData inputIkePolicy = mapper.readValue(createIkePolicy, IkePolicyData.class);
+      uuid = inputIkePolicy.getIkePolicy().getId();
+
+    } catch (Exception e) {
+      Logger.error(
+          "Runtime error creating Ike Policy : " + name + " error message: " + e.getMessage());
+      return null;
+    }
+
+    return uuid;
+  }
+
+  /**
+   * Delete the Ike Policy for the given name.
+   *
+   * @return the Response
+   */
+  public String deleteIkePolicy(String name) {
+
+    String outputResponse = null;
+
+    Logger.info("Delete Ike Policy");
+    try {
+      mapper = new ObjectMapper();
+      String ikePolicyString =
+          JavaStackUtils.convertHttpResponseToString(javaStack.deleteIkePolicy(getIkePolicy(name)));
+      Logger.info(ikePolicyString);
+      outputResponse = ikePolicyString;
+
+    } catch (Exception e) {
+      Logger.error("Runtime error deleting openstack ike policy" + " error message: " + e.getMessage());
+    }
+
+    return outputResponse;
+
+  }
+
+  /**
+   * Get the Ipsec Policy for the given name.
+   *
+   * @return the Ipsec Policy Id
+   */
+  public String getIpsecPolicy(String name) {
+
+    String outputIpsecPolicyId = null;
+
+    Logger.info("Getting Ipsec Policy");
+    try {
+      mapper = new ObjectMapper();
+      String ipsecPolicyString =
+          JavaStackUtils.convertHttpResponseToString(javaStack.getIpsecPolicy(name));
+      Logger.info(ipsecPolicyString);
+      IpsecPoliciesData inputIpsecPolicy = mapper.readValue(ipsecPolicyString, IpsecPoliciesData.class);
+      Logger.info(inputIpsecPolicy.getIpsecPolicy().toString());
+
+      IpsecPolicyProperties inputIpsecPolicyProp = inputIpsecPolicy.getIpsecPolicy().get(0);
+      Logger.info(inputIpsecPolicyProp.getId() + ": " + inputIpsecPolicyProp.getName());
+
+      outputIpsecPolicyId = inputIpsecPolicyProp.getId();
+
+    } catch (Exception e) {
+      Logger.error("Runtime error getting openstack ipsec policy" + " error message: " + e.getMessage());
+    }
+
+    return outputIpsecPolicyId;
+
+  }
+
+  /**
+   * Create an Ipsec Policy
+   *
+   * @param name - the name
+   * @param lifetime - Ike lifetime in seconds
+   * @return - the uuid of the created Ipsec Policy, if the process failed the returned value is null
+   */
+  public String createIpsecPolicy(String name, String lifetime) {
+    String uuid = null;
+
+    Logger.info("Creating Ipsec Policy: " + name);
+
+    try {
+      mapper = new ObjectMapper();
+      String createIpsecPolicy =
+          JavaStackUtils.convertHttpResponseToString(javaStack.createIpsecPolicy(name,lifetime));
+      Logger.info(createIpsecPolicy);
+      IpsecPolicyData inputIpsecPolicy = mapper.readValue(createIpsecPolicy, IpsecPolicyData.class);
+      uuid = inputIpsecPolicy.getIpsecPolicy().getId();
+
+    } catch (Exception e) {
+      Logger.error(
+          "Runtime error creating Ipsec Policy : " + name + " error message: " + e.getMessage());
+      return null;
+    }
+
+    return uuid;
+  }
+
+  /**
+   * Delete the Ipsec Policy for the given name.
+   *
+   * @return the Response
+   */
+  public String deleteIpsecPolicy(String name) {
+
+    String outputResponse = null;
+
+    Logger.info("Delete Ipsec Policy");
+    try {
+      mapper = new ObjectMapper();
+      String ipsecPolicyString =
+          JavaStackUtils.convertHttpResponseToString(javaStack.deleteIpsecPolicy(getIpsecPolicy(name)));
+      Logger.info(ipsecPolicyString);
+      outputResponse = ipsecPolicyString;
+
+    } catch (Exception e) {
+      Logger.error("Runtime error deleting openstack ipsec policy" + " error message: " + e.getMessage());
+    }
+
+    return outputResponse;
+
+  }
+
+  /**
+   * Get the Vpn Service for the given name.
+   *
+   * @return the Vpn Service Id
+   */
+  public String getVpnService(String name) {
+
+    String outputVpnServiceId = null;
+
+    Logger.info("Getting Vpn Service");
+    try {
+      mapper = new ObjectMapper();
+      String vpnServiceString =
+          JavaStackUtils.convertHttpResponseToString(javaStack.getVpnService(name));
+      Logger.info(vpnServiceString);
+      VpnServicesData inputVpnService = mapper.readValue(vpnServiceString, VpnServicesData.class);
+      Logger.info(inputVpnService.getVpnService().toString());
+
+      VpnServiceProperties inputVpnServiceProp = inputVpnService.getVpnService().get(0);
+      Logger.info(inputVpnServiceProp.getId() + ": " + inputVpnServiceProp.getName());
+
+      outputVpnServiceId = inputVpnServiceProp.getId();
+
+    } catch (Exception e) {
+      Logger.error("Runtime error getting openstack vpn service" + " error message: " + e.getMessage());
+    }
+
+    return outputVpnServiceId;
+
+  }
+
+  /**
+   * Create an Vpn Service
+   *
+   * @param name - the name
+   * @param routerId - router id
+   * @return - the uuid of the created Vpn Service, if the process failed the returned value is null
+   */
+  public String createVpnService(String name, String routerId) {
+    String uuid = null;
+
+    Logger.info("Creating Vpn Service: " + name);
+
+    try {
+      mapper = new ObjectMapper();
+      String createVpnService =
+          JavaStackUtils.convertHttpResponseToString(javaStack.createVpnService(name,routerId));
+      Logger.info(createVpnService);
+      VpnServiceData inputVpnService = mapper.readValue(createVpnService, VpnServiceData.class);
+      uuid = inputVpnService.getVpnService().getId();
+
+    } catch (Exception e) {
+      Logger.error(
+          "Runtime error creating vpn service : " + name + " error message: " + e.getMessage());
+      return null;
+    }
+
+    return uuid;
+  }
+
+  /**
+   * Delete the Vpn Service for the given name.
+   *
+   * @return the Response
+   */
+  public String deleteVpnService(String name) {
+
+    String outputResponse = null;
+
+    Logger.info("Delete Vpn Service");
+    try {
+      mapper = new ObjectMapper();
+      String vpnServiceString =
+          JavaStackUtils.convertHttpResponseToString(javaStack.deleteVpnService(getVpnService(name)));
+      Logger.info(vpnServiceString);
+      outputResponse = vpnServiceString;
+
+    } catch (Exception e) {
+      Logger.error("Runtime error deleting openstack vpn service" + " error message: " + e.getMessage());
+    }
+
+    return outputResponse;
+
+  }
+
+
+  /**
+   * Get the Endpoint Group for the given name.
+   *
+   * @return the Endpoint Group Id
+   */
+  public String getEndpointGroup(String name) {
+
+    String outputEndpointGroupId = null;
+
+    Logger.info("Getting Endpoint Group");
+    try {
+      mapper = new ObjectMapper();
+      String endpointGroupString =
+          JavaStackUtils.convertHttpResponseToString(javaStack.getEndpointGroup(name));
+      Logger.info(endpointGroupString);
+      EndpointGroupsData inputEndpointGroup = mapper.readValue(endpointGroupString, EndpointGroupsData.class);
+      Logger.info(inputEndpointGroup.getEndpointGroups().toString());
+
+      EndpointGroupProperties inputEndpointGroupProp = inputEndpointGroup.getEndpointGroups().get(0);
+      Logger.info(inputEndpointGroupProp.getId() + ": " + inputEndpointGroupProp.getName());
+
+      outputEndpointGroupId = inputEndpointGroupProp.getId();
+
+    } catch (Exception e) {
+      Logger.error("Runtime error getting openstack Endpoint Group" + " error message: " + e.getMessage());
+    }
+
+    return outputEndpointGroupId;
+
+  }
+
+  /**
+   * Create an Endpoint Group
+   *
+   * @param name - the name
+   * @param type - type
+   * @param endpoints - endpoints
+   * @return - the uuid of the created Endpoint Group, if the process failed the returned value is null
+   */
+  public String createEndpointGroup(String name, String type, ArrayList<String> endpoints) {
+    String uuid = null;
+
+    Logger.info("Creating Endpoint Group: " + name);
+
+    try {
+      mapper = new ObjectMapper();
+      String createEndpointGroup =
+          JavaStackUtils.convertHttpResponseToString(javaStack.createEndpointGroup(name,type,endpoints));
+      Logger.info(createEndpointGroup);
+      EndpointGroupData inputEndpointGroup = mapper.readValue(createEndpointGroup, EndpointGroupData.class);
+      uuid = inputEndpointGroup.getEndpointGroup().getId();
+
+    } catch (Exception e) {
+      Logger.error(
+          "Runtime error creating Endpoint Group : " + name + " error message: " + e.getMessage());
+      return null;
+    }
+
+    return uuid;
+  }
+
+  /**
+   * Delete the Endpoint Group for the given name.
+   *
+   * @return the Response
+   */
+  public String deleteEndpointGroup(String name) {
+
+    String outputResponse = null;
+
+    Logger.info("Delete Endpoint Group");
+    try {
+      mapper = new ObjectMapper();
+      String endpointGroupString =
+          JavaStackUtils.convertHttpResponseToString(javaStack.deleteEndpointGroup(getEndpointGroup(name)));
+      Logger.info(endpointGroupString);
+      outputResponse = endpointGroupString;
+
+    } catch (Exception e) {
+      Logger.error("Runtime error deleting openstack Endpoint Group" + " error message: " + e.getMessage());
+    }
+
+    return outputResponse;
+
+  }
+
+  /**
+   * Get the Ipsec Connection for the given name.
+   *
+   * @return the Ipsec Connection Id
+   */
+  public String getIpsecConnection(String name) {
+
+    String outputIpsecConnectionId = null;
+
+    Logger.info("Getting Ipsec Connection");
+    try {
+      mapper = new ObjectMapper();
+      String ipsecConnectionString =
+          JavaStackUtils.convertHttpResponseToString(javaStack.getIpsecConnection(name));
+      Logger.info(ipsecConnectionString);
+      IpsecConnectionsData inputIpsecConnection = mapper.readValue(ipsecConnectionString, IpsecConnectionsData.class);
+      Logger.info(inputIpsecConnection.getIpsecConnections().toString());
+
+      IpsecConnectionProperties inputIpsecConnectionProp = inputIpsecConnection.getIpsecConnections().get(0);
+      Logger.info(inputIpsecConnectionProp.getId() + ": " + inputIpsecConnectionProp.getName());
+
+      outputIpsecConnectionId = inputIpsecConnectionProp.getId();
+
+    } catch (Exception e) {
+      Logger.error("Runtime error getting openstack Ipsec Connection" + " error message: " + e.getMessage());
+    }
+
+    return outputIpsecConnectionId;
+
+  }
+
+  /**
+   * Create an Ipsec Connection
+   *
+   * @param name - the name
+   * @param vpnServiceId - Vpn Service Id
+   * @param ikePolicyId - Ike Policy Id
+   * @param ipsecPolicyId - Ipsec Policy Id
+   * @param peerAddress - Peer Address
+   * @param peerId - Peer Id
+   * @param psk - psk
+   * @param subnetEpGroupId - subnet Endpoint Group Id
+   * @param cidrEpGroupId - cidr Endpoint Group Id
+   * @return - the uuid of the created Ipsec Connection, if the process failed the returned value is null
+   */
+  public String createIpsecConnection(String name, String vpnServiceId, String ikePolicyId,
+                                      String ipsecPolicyId, String peerAddress, String peerId, String psk,
+                                      String subnetEpGroupId, String cidrEpGroupId) {
+    String uuid = null;
+
+    Logger.info("Creating Ipsec Connection: " + name);
+
+    try {
+      mapper = new ObjectMapper();
+      String createIpsecConnection =
+          JavaStackUtils.convertHttpResponseToString(javaStack.createIpsecConnection(name, vpnServiceId, ikePolicyId,
+              ipsecPolicyId, peerAddress, peerId, psk, subnetEpGroupId, cidrEpGroupId));
+      Logger.info(createIpsecConnection);
+      IpsecConnectionData inputIpsecConnection = mapper.readValue(createIpsecConnection, IpsecConnectionData.class);
+      uuid = inputIpsecConnection.getIpsecConnection().getId();
+
+    } catch (Exception e) {
+      Logger.error(
+          "Runtime error creating Ipsec Connection : " + name + " error message: " + e.getMessage());
+      return null;
+    }
+
+    return uuid;
+  }
+
+  /**
+   * Delete the Ipsec Connection for the given name.
+   *
+   * @return the Response
+   */
+  public String deleteIpsecConnection(String name) {
+
+    String outputResponse = null;
+
+    Logger.info("Delete Ipsec Connection");
+    try {
+      mapper = new ObjectMapper();
+      String ipsecConnectionString =
+          JavaStackUtils.convertHttpResponseToString(javaStack.deleteIpsecConnection(getIpsecConnection(name)));
+      Logger.info(ipsecConnectionString);
+      outputResponse = ipsecConnectionString;
+
+    } catch (Exception e) {
+      Logger.error("Runtime error deleting openstack Ipsec Connection" + " error message: " + e.getMessage());
+    }
+
+    return outputResponse;
+
+  }
+  
 }

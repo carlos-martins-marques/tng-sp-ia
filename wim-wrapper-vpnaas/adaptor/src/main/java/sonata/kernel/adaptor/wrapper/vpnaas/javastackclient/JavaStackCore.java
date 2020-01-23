@@ -29,6 +29,7 @@ package sonata.kernel.adaptor.wrapper.vpnaas.javastackclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.sun.xml.internal.xsom.impl.scd.Iterators;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseFactory;
 import org.apache.http.HttpVersion;
@@ -1414,6 +1415,564 @@ public class JavaStackCore {
           "Get Subnet  Failed with Status: " + status_code), null);
     }
     return response;
+  }
+
+  /**
+   * NEUTRON method to get Ike Policy details by given name
+   *
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse getIkePolicy(String name) throws IOException {
+    HttpGet getIkePolicy= null;
+    HttpResponse response = null;
+
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    HttpResponseFactory factory = new DefaultHttpResponseFactory();
+
+    if (isAuthenticated) {
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Network.getPORT());
+      buildUrl.append(String.format("/%s/vpn/ikepolicies?name=%s", Network.getVERSION(), name));
+
+      // Logger.debug("[JavaStack] Authenticating client...");
+      getIkePolicy = new HttpGet(buildUrl.toString());
+      getIkePolicy.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+      Logger.debug("[JavaStack] " + getIkePolicy.toString());
+
+      response = httpClient.execute(getIkePolicy);
+      Logger.debug("[JavaStack] GET Ike Policy response:");
+      Logger.debug(response.toString());
+      int status_code = response.getStatusLine().getStatusCode();
+      return (status_code == 200)
+          ? response
+          : factory.newHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, status_code,
+          "Get Ike Policy Failed with Status: " + status_code), null);
+    }
+    return response;
+  }
+
+  /**
+   * NEUTRON Method to create an Ike Policy
+   *
+   * @param name
+   * @param lifetime in seconds
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse createIkePolicy(String name, String lifetime) throws IOException {
+    HttpPost createIkePolicy;
+    HttpClient httpClient = HttpClientBuilder.create().build();
+
+    if (this.isAuthenticated) {
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(this.endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Network.getPORT());
+      buildUrl.append(String.format("/%s/vpn/ikepolicies", Network.getVERSION()));
+
+      createIkePolicy = new HttpPost(buildUrl.toString());
+
+      String requestBody =
+          String.format("{ \"ikepolicy\": { \"name\": \"%s\",\"lifetime\": {\"units\": \"seconds\", \"value\": %s} }}", name, lifetime);
+
+      createIkePolicy.setEntity(new StringEntity(requestBody, ContentType.APPLICATION_JSON));
+      createIkePolicy.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+
+      Logger.debug("[JavaStack] body " + requestBody);
+      Logger.debug("[JavaStack] " + createIkePolicy.toString());
+
+    } else {
+      throw new IOException(
+          "You must Authenticate before issuing this request, please re-authenticate. ");
+    }
+    return httpClient.execute(createIkePolicy);
+  }
+
+  /**
+   * NEUTRON method to delete an Ike Policy
+   *
+   * @param id
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse deleteIkePolicy(String id)
+      throws IOException {
+
+    HttpDelete deleteIkePolicy;
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    if (this.isAuthenticated) {
+
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(this.endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Orchestration.getPORT());
+      buildUrl.append(String.format("/%s/vpn/ikepolicies/%s", Network.getVERSION(),id));
+
+      deleteIkePolicy = new HttpDelete(buildUrl.toString());
+      deleteIkePolicy.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+
+      return httpClient.execute(deleteIkePolicy);
+    } else {
+      throw new IOException(
+          "You must Authenticate before issuing this request, please re-authenticate. ");
+    }
+  }
+
+  /**
+   * NEUTRON method to get Ipsec Policy details by given name
+   *
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse getIpsecPolicy(String name) throws IOException {
+    HttpGet getIpsecPolicy= null;
+    HttpResponse response = null;
+
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    HttpResponseFactory factory = new DefaultHttpResponseFactory();
+
+    if (isAuthenticated) {
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Network.getPORT());
+      buildUrl.append(String.format("/%s/vpn/ipsecpolicies?name=%s", Network.getVERSION(), name));
+
+      // Logger.debug("[JavaStack] Authenticating client...");
+      getIpsecPolicy = new HttpGet(buildUrl.toString());
+      getIpsecPolicy.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+      Logger.debug("[JavaStack] " + getIpsecPolicy.toString());
+
+      response = httpClient.execute(getIpsecPolicy);
+      Logger.debug("[JavaStack] GET Ipsec Policy response:");
+      Logger.debug(response.toString());
+      int status_code = response.getStatusLine().getStatusCode();
+      return (status_code == 200)
+          ? response
+          : factory.newHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, status_code,
+          "Get Ipsec Policy Failed with Status: " + status_code), null);
+    }
+    return response;
+  }
+
+  /**
+   * NEUTRON Method to create an Ipsec Policy
+   *
+   * @param name
+   * @param lifetime in seconds
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse createIpsecPolicy(String name, String lifetime) throws IOException {
+    HttpPost createIpsecPolicy;
+    HttpClient httpClient = HttpClientBuilder.create().build();
+
+    if (this.isAuthenticated) {
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(this.endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Network.getPORT());
+      buildUrl.append(String.format("/%s/vpn/ipsecpolicies", Network.getVERSION()));
+
+      createIpsecPolicy = new HttpPost(buildUrl.toString());
+
+      String requestBody =
+          String.format("{ \"ipsecpolicy\": { \"name\": \"%s\",\"lifetime\": {\"units\": \"seconds\", \"value\": %s} }}", name, lifetime);
+
+      createIpsecPolicy.setEntity(new StringEntity(requestBody, ContentType.APPLICATION_JSON));
+      createIpsecPolicy.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+
+      Logger.debug("[JavaStack] body " + requestBody);
+      Logger.debug("[JavaStack] " + createIpsecPolicy.toString());
+
+    } else {
+      throw new IOException(
+          "You must Authenticate before issuing this request, please re-authenticate. ");
+    }
+    return httpClient.execute(createIpsecPolicy);
+  }
+
+  /**
+   * NEUTRON method to delete an Ipsec Policy
+   *
+   * @param id
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse deleteIpsecPolicy(String id)
+      throws IOException {
+
+    HttpDelete deleteIpsecPolicy;
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    if (this.isAuthenticated) {
+
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(this.endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Orchestration.getPORT());
+      buildUrl.append(String.format("/%s/vpn/ipsecpolicies/%s", Network.getVERSION(),id));
+
+      deleteIpsecPolicy = new HttpDelete(buildUrl.toString());
+      deleteIpsecPolicy.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+
+      return httpClient.execute(deleteIpsecPolicy);
+    } else {
+      throw new IOException(
+          "You must Authenticate before issuing this request, please re-authenticate. ");
+    }
+  }
+
+  /**
+   * NEUTRON method to get Vpn Service details by given name
+   *
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse getVpnService(String name) throws IOException {
+    HttpGet getVpnServices= null;
+    HttpResponse response = null;
+
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    HttpResponseFactory factory = new DefaultHttpResponseFactory();
+
+    if (isAuthenticated) {
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Network.getPORT());
+      buildUrl.append(String.format("/%s/vpn/vpnservices?name=%s", Network.getVERSION(), name));
+
+      // Logger.debug("[JavaStack] Authenticating client...");
+      getVpnServices = new HttpGet(buildUrl.toString());
+      getVpnServices.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+      Logger.debug("[JavaStack] " + getVpnServices.toString());
+
+      response = httpClient.execute(getVpnServices);
+      Logger.debug("[JavaStack] GET Vpn Service response:");
+      Logger.debug(response.toString());
+      int status_code = response.getStatusLine().getStatusCode();
+      return (status_code == 200)
+          ? response
+          : factory.newHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, status_code,
+          "Get Vpn Service Failed with Status: " + status_code), null);
+    }
+    return response;
+  }
+
+  /**
+   * NEUTRON Method to create an Vpn Service
+   *
+   * @param name
+   * @param routerId
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse createVpnService(String name, String routerId) throws IOException {
+    HttpPost createVpnService;
+    HttpClient httpClient = HttpClientBuilder.create().build();
+
+    if (this.isAuthenticated) {
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(this.endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Network.getPORT());
+      buildUrl.append(String.format("/%s/vpn/vpnservices", Network.getVERSION()));
+
+      createVpnService = new HttpPost(buildUrl.toString());
+
+      String requestBody =
+          String.format("{ \"vpnservice\": { \"name\": \"%s\",\"router_id\": \"%s\" }}", name, routerId);
+
+      createVpnService.setEntity(new StringEntity(requestBody, ContentType.APPLICATION_JSON));
+      createVpnService.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+
+      Logger.debug("[JavaStack] body " + requestBody);
+      Logger.debug("[JavaStack] " + createVpnService.toString());
+
+    } else {
+      throw new IOException(
+          "You must Authenticate before issuing this request, please re-authenticate. ");
+    }
+    return httpClient.execute(createVpnService);
+  }
+
+  /**
+   * NEUTRON method to delete an Vpn Services
+   *
+   * @param id
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse deleteVpnService(String id)
+      throws IOException {
+
+    HttpDelete deleteVpnService;
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    if (this.isAuthenticated) {
+
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(this.endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Orchestration.getPORT());
+      buildUrl.append(String.format("/%s/vpn/vpnservices/%s", Network.getVERSION(),id));
+
+      deleteVpnService = new HttpDelete(buildUrl.toString());
+      deleteVpnService.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+
+      return httpClient.execute(deleteVpnService);
+    } else {
+      throw new IOException(
+          "You must Authenticate before issuing this request, please re-authenticate. ");
+    }
+  }
+
+
+  /**
+   * NEUTRON method to get Endpoint Group details by given name
+   *
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse getEndpointGroup(String name) throws IOException {
+    HttpGet getEndpointGroup= null;
+    HttpResponse response = null;
+
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    HttpResponseFactory factory = new DefaultHttpResponseFactory();
+
+    if (isAuthenticated) {
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Network.getPORT());
+      buildUrl.append(String.format("/%s/vpn/endpoint-groups?name=%s", Network.getVERSION(), name));
+
+      // Logger.debug("[JavaStack] Authenticating client...");
+      getEndpointGroup = new HttpGet(buildUrl.toString());
+      getEndpointGroup.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+      Logger.debug("[JavaStack] " + getEndpointGroup.toString());
+
+      response = httpClient.execute(getEndpointGroup);
+      Logger.debug("[JavaStack] GET Endpoint Group response:");
+      Logger.debug(response.toString());
+      int status_code = response.getStatusLine().getStatusCode();
+      return (status_code == 200)
+          ? response
+          : factory.newHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, status_code,
+          "Get Endpoint Group Failed with Status: " + status_code), null);
+    }
+    return response;
+  }
+
+  /**
+   * NEUTRON Method to create an Endpoint Group
+   *
+   * @param name
+   * @param type
+   * @param endpoints
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse createEndpointGroup(String name, String type, ArrayList<String> endpoints) throws IOException {
+    HttpPost createEndpointGroup;
+    HttpClient httpClient = HttpClientBuilder.create().build();
+
+    if (this.isAuthenticated) {
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(this.endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Network.getPORT());
+      buildUrl.append(String.format("/%s/vpn/endpoint-groups", Network.getVERSION()));
+
+      createEndpointGroup = new HttpPost(buildUrl.toString());
+
+      String endpoints_json = "";
+      for (String endpoint : endpoints) {
+        if (!endpoints_json.equals("")) {
+          endpoints_json = endpoints_json + ",";
+        }
+        endpoints_json = endpoints_json + "\""+endpoint+"\"";
+      }
+
+      String requestBody =
+          String.format("{ \"endpoint_group\": { \"name\": \"%s\",\"type\": \"%s\",  \"endpoints\": [%s] }}", name, type, endpoints_json);
+
+      createEndpointGroup.setEntity(new StringEntity(requestBody, ContentType.APPLICATION_JSON));
+      createEndpointGroup.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+
+      Logger.debug("[JavaStack] body " + requestBody);
+      Logger.debug("[JavaStack] " + createEndpointGroup.toString());
+
+    } else {
+      throw new IOException(
+          "You must Authenticate before issuing this request, please re-authenticate. ");
+    }
+    return httpClient.execute(createEndpointGroup);
+  }
+
+  /**
+   * NEUTRON method to delete an Endpoint Group
+   *
+   * @param id
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse deleteEndpointGroup(String id)
+      throws IOException {
+
+    HttpDelete deleteEndpointGroup;
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    if (this.isAuthenticated) {
+
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(this.endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Orchestration.getPORT());
+      buildUrl.append(String.format("/%s/vpn/endpoint-groups/%s", Network.getVERSION(),id));
+
+      deleteEndpointGroup = new HttpDelete(buildUrl.toString());
+      deleteEndpointGroup.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+
+      return httpClient.execute(deleteEndpointGroup);
+    } else {
+      throw new IOException(
+          "You must Authenticate before issuing this request, please re-authenticate. ");
+    }
+  }
+
+  /**
+   * NEUTRON method to get Ipsec Connection details by given name
+   *
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse getIpsecConnection(String name) throws IOException {
+    HttpGet getIpsecConnection= null;
+    HttpResponse response = null;
+
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    HttpResponseFactory factory = new DefaultHttpResponseFactory();
+
+    if (isAuthenticated) {
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Network.getPORT());
+      buildUrl.append(String.format("/%s/vpn/ipsec-site-connections?name=%s", Network.getVERSION(), name));
+
+      // Logger.debug("[JavaStack] Authenticating client...");
+      getIpsecConnection = new HttpGet(buildUrl.toString());
+      getIpsecConnection.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+      Logger.debug("[JavaStack] " + getIpsecConnection.toString());
+
+      response = httpClient.execute(getIpsecConnection);
+      Logger.debug("[JavaStack] GET Ipsec Connection response:");
+      Logger.debug(response.toString());
+      int status_code = response.getStatusLine().getStatusCode();
+      return (status_code == 200)
+          ? response
+          : factory.newHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, status_code,
+          "Get Ipsec Connection Failed with Status: " + status_code), null);
+    }
+    return response;
+  }
+
+  /**
+   * NEUTRON Method to create an Ipsec Connection
+   *
+   * @param name
+   * @param vpnServiceId
+   * @param ikePolicyId
+   * @param ipsecPolicyId
+   * @param peerAddress
+   * @param peerId
+   * @param psk
+   * @param subnetEpGroupId
+   * @param cidrEpGroupId
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse createIpsecConnection(String name, String vpnServiceId, String ikePolicyId,
+                                          String ipsecPolicyId, String peerAddress, String peerId, String psk,
+                                          String subnetEpGroupId, String cidrEpGroupId) throws IOException {
+    HttpPost createIpsecConnection;
+    HttpClient httpClient = HttpClientBuilder.create().build();
+
+    if (this.isAuthenticated) {
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(this.endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Network.getPORT());
+      buildUrl.append(String.format("/%s/vpn/ipsec-site-connections", Network.getVERSION()));
+
+      createIpsecConnection = new HttpPost(buildUrl.toString());
+
+      String requestBody =
+          String.format("{ \"endpoint_group\": { \"name\": \"%s\",\"vpnservice_id\": \"%s\" }," +
+              "\"ikepolicy_id\": \"%s\" },\"ipsecpolicy_id\": \"%s\" },\"peer_address\": \"%s\" }" +
+              ",\"peer_id\": \"%s\" },\"psk\": \"%s\" },\"local_ep_group_id\": \"%s\" }" +
+              ",\"peer_ep_group_id\": \"%s\" }}", name, vpnServiceId, ikePolicyId, ipsecPolicyId,
+              peerAddress, peerId, psk, subnetEpGroupId, cidrEpGroupId);
+
+      createIpsecConnection.setEntity(new StringEntity(requestBody, ContentType.APPLICATION_JSON));
+      createIpsecConnection.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+
+      Logger.debug("[JavaStack] body " + requestBody);
+      Logger.debug("[JavaStack] " + createIpsecConnection.toString());
+
+    } else {
+      throw new IOException(
+          "You must Authenticate before issuing this request, please re-authenticate. ");
+    }
+    return httpClient.execute(createIpsecConnection);
+  }
+
+  /**
+   * NEUTRON method to delete an Ipsec Connection
+   *
+   * @param id
+   * @return
+   * @throws IOException
+   */
+  public synchronized HttpResponse deleteIpsecConnection(String id)
+      throws IOException {
+
+    HttpDelete deleteIpsecConnection;
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    if (this.isAuthenticated) {
+
+      StringBuilder buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(this.endpoint);
+      buildUrl.append(":");
+      buildUrl.append(Orchestration.getPORT());
+      buildUrl.append(String.format("/%s/vpn/ipsec-site-connections/%s", Network.getVERSION(),id));
+
+      deleteIpsecConnection = new HttpDelete(buildUrl.toString());
+      deleteIpsecConnection.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+
+      return httpClient.execute(deleteIpsecConnection);
+    } else {
+      throw new IOException(
+          "You must Authenticate before issuing this request, please re-authenticate. ");
+    }
   }
 
 }

@@ -55,7 +55,6 @@ public class WimVpnaasWrapper extends WimWrapper {
       // Add entry to DB
       WrapperBay.getInstance().getWimRepo().writeServiceInstanceEntry(instanceId, vlId, ingress.getLocation(), egress.getLocation(), this.getWimConfig().getUuid());
 
-      //TODO
       //// Get information from ingress side (VIM Left)
       // Get router_id from VIM DB for ingress location (VIM Left)
       String routerIdLeft = null;
@@ -181,35 +180,159 @@ public class WimVpnaasWrapper extends WimWrapper {
       //// Create the VPN connection in the VIM Left (use of instance_id/vl_id in the names of resources)
       //Check if vpn service already exist
       // Create the vpn service or get the id of the existent (use router_id Left)
+      String vpnServiceIdLeft = getVpnService(vimConfigLeft,"vpn_5");
+      if (vpnServiceIdLeft == null) {
+        vpnServiceIdLeft = createVpnService(vimConfigLeft, "vpn_5", routerIdLeft);
+      }
+      if (vpnServiceIdLeft == null) {
+        Logger.error("Failed creating Vpn Service for vim uuid " + ingress.getLocation());
+        out = false;
+        return out;
+      }
 
       //Check if ike policy already exist
       // Create the ike policy or get the id of the existent (lifetime 60s)
+      String ikePolicyIdLeft = getIkePolicy(vimConfigLeft,"ikepolicy_5");
+      if (ikePolicyIdLeft == null) {
+        ikePolicyIdLeft = createIkePolicy(vimConfigLeft, "ikepolicy_5", "60");
+      }
+      if (ikePolicyIdLeft == null) {
+        Logger.error("Failed creating Ike Policy for vim uuid " + ingress.getLocation());
+        out = false;
+        return out;
+      }
 
       //Check if ipsec policy already exist
       // Create the ipsec policy or get the id of the existent (lifetime 60s)
-
+      String ipsecPolicyIdLeft = getIpsecPolicy(vimConfigLeft,"ipsecpolicy_5");
+      if (ipsecPolicyIdLeft == null) {
+        ipsecPolicyIdLeft = createIpsecPolicy(vimConfigLeft, "ipsecpolicy_5", "60");
+      }
+      if (ipsecPolicyIdLeft == null) {
+        Logger.error("Failed creating Ipsec Policy for vim uuid " + ingress.getLocation());
+        out = false;
+        return out;
+      }
       // Create the endpoint group for subnet (use subnet_id Left)
+      String subnetEndpointGroupIdLeft = getEndpointGroup(vimConfigLeft,"subnet_5");
+      if (subnetEndpointGroupIdLeft == null) {
+        ArrayList<String> endpoints = new ArrayList<>();
+        endpoints.add(subnetIdLeft);
+        subnetEndpointGroupIdLeft = createEndpointGroup(vimConfigLeft, "subnet_5", "subnet", endpoints);
+      }
+      if (subnetEndpointGroupIdLeft == null) {
+        Logger.error("Failed creating Endpoint Group subnet for vim uuid " + ingress.getLocation());
+        out = false;
+        return out;
+      }
 
       // Create the endpoint group for cidr (use cidr Right)
+      String cidrEndpointGroupIdLeft = getEndpointGroup(vimConfigLeft,"cidr_5");
+      if (cidrEndpointGroupIdLeft == null) {
+        ArrayList<String> endpoints = new ArrayList<>();
+        endpoints.add(subnetCidrRight);
+        cidrEndpointGroupIdLeft = createEndpointGroup(vimConfigLeft, "cidr_5", "cidr", endpoints);
+      }
+      if (cidrEndpointGroupIdLeft == null) {
+        Logger.error("Failed creating Endpoint Group cidr for vim uuid " + ingress.getLocation());
+        out = false;
+        return out;
+      }
 
       // create the ipsec connection (use router_ip Right and the ids of the resources created)
-
+      String ipsecConnectionIdLeft = getIpsecConnection(vimConfigLeft,"vpnconnection_5");
+      if (ipsecConnectionIdLeft == null) {
+        ipsecConnectionIdLeft = createIpsecConnection(vimConfigLeft, "vpnconnection_5", vpnServiceIdLeft,
+            ikePolicyIdLeft, ipsecPolicyIdLeft, routerIpRight, routerIpRight, "secret", subnetEndpointGroupIdLeft,
+            cidrEndpointGroupIdLeft);
+      }
+      if (ipsecConnectionIdLeft == null) {
+        Logger.error("Failed creating Ipsec Connection for vim uuid " + ingress.getLocation());
+        out = false;
+        return out;
+      }
+      Logger.info("Left=>  vpn_service_id: " + vpnServiceIdLeft + " ike_policy_id: " + ikePolicyIdLeft +
+          " ipsec_policy_id: " + ipsecPolicyIdLeft + " subnet_endpoint_group_id: " + subnetEndpointGroupIdLeft
+          + " cidr_endpoint_group_id: " + cidrEndpointGroupIdLeft + " ipsec_connection_id: " + ipsecConnectionIdLeft);
 
       //// Create the VPN connection in the VIM Right (use of instance_id/vl_id in the names of resources)
       //Check if vpn service already exist
       // Create the vpn service or get the id of the existent (use router_id Right)
-
+      String vpnServiceIdRight = getVpnService(vimConfigRight,"vpn_5");
+      if (vpnServiceIdRight == null) {
+        vpnServiceIdRight = createVpnService(vimConfigRight, "vpn_5", routerIdRight);
+      }
+      if (vpnServiceIdRight == null) {
+        Logger.error("Failed creating Vpn Service for vim uuid " + egress.getLocation());
+        out = false;
+        return out;
+      }
       //Check if ike policy already exist
       // Create the ike policy or get the id of the existent (lifetime 60s)
+      String ikePolicyIdRight = getIkePolicy(vimConfigRight,"ikepolicy_5");
+      if (ikePolicyIdRight == null) {
+        ikePolicyIdRight = createIkePolicy(vimConfigRight, "ikepolicy_5", "60");
+      }
+      if (ikePolicyIdRight == null) {
+        Logger.error("Failed creating Ike Policy for vim uuid " + egress.getLocation());
+        out = false;
+        return out;
+      }
 
       //Check if ipsec policy already exist
       // Create the ipsec policy or get the id of the existent (lifetime 60s)
+      String ipsecPolicyIdRight = getIpsecPolicy(vimConfigRight,"ipsecpolicy_5");
+      if (ipsecPolicyIdRight == null) {
+        ipsecPolicyIdRight = createIpsecPolicy(vimConfigRight, "ipsecpolicy_5", "60");
+      }
+      if (ipsecPolicyIdRight == null) {
+        Logger.error("Failed creating Ipsec Policy for vim uuid " + egress.getLocation());
+        out = false;
+        return out;
+      }
 
       // Create the endpoint group for subnet (use subnet_id Right)
+      String subnetEndpointGroupIdRight = getEndpointGroup(vimConfigRight,"subnet_5");
+      if (subnetEndpointGroupIdRight == null) {
+        ArrayList<String> endpoints = new ArrayList<>();
+        endpoints.add(subnetIdRight);
+        subnetEndpointGroupIdRight = createEndpointGroup(vimConfigRight, "subnet_5", "subnet", endpoints);
+      }
+      if (subnetEndpointGroupIdRight == null) {
+        Logger.error("Failed creating Endpoint Group subnet for vim uuid " + egress.getLocation());
+        out = false;
+        return out;
+      }
 
       // Create the endpoint group for cidr (use cidr Left)
+      String cidrEndpointGroupIdRight = getEndpointGroup(vimConfigRight,"cidr_5");
+      if (cidrEndpointGroupIdRight == null) {
+        ArrayList<String> endpoints = new ArrayList<>();
+        endpoints.add(subnetCidrLeft);
+        cidrEndpointGroupIdRight = createEndpointGroup(vimConfigRight, "cidr_5", "cidr", endpoints);
+      }
+      if (cidrEndpointGroupIdRight == null) {
+        Logger.error("Failed creating Endpoint Group cidr for vim uuid " + egress.getLocation());
+        out = false;
+        return out;
+      }
 
       // create the ipsec connection (use router_ip Left and the ids of the resources created)
+      String ipsecConnectionIdRight = getIpsecConnection(vimConfigRight,"vpnconnection_5");
+      if (ipsecConnectionIdRight == null) {
+        ipsecConnectionIdRight = createIpsecConnection(vimConfigRight, "vpnconnection_5", vpnServiceIdRight,
+            ikePolicyIdRight, ipsecPolicyIdRight, routerIpLeft, routerIpLeft, "secret", subnetEndpointGroupIdRight, cidrEndpointGroupIdRight);
+      }
+      if (ipsecConnectionIdRight == null) {
+        Logger.error("Failed creating Ipsec Connection for vim uuid " + egress.getLocation());
+        out = false;
+        return out;
+      }
+
+      Logger.info("Right=>  vpn_service_id: " + vpnServiceIdRight + " ike_policy_id: " + ikePolicyIdRight +
+          " ipsec_policy_id: " + ipsecPolicyIdRight + " subnet_endpoint_group_id: " + subnetEndpointGroupIdRight
+          + " cidr_endpoint_group_id: " + cidrEndpointGroupIdRight + " ipsec_connection_id: " + ipsecConnectionIdRight);
+
       Logger.info("WAN Configured");
     } else {
       Logger.warn("VPN for the instance id " + instanceId + " and vl id " + vlId + " already exist.");
@@ -226,44 +349,100 @@ public class WimVpnaasWrapper extends WimWrapper {
     WimServiceConfiguration serviceConfiguration = WrapperBay.getInstance().getWimRepo().getServiceConfigurationFromInstance(instanceId,vlId);
     if (serviceConfiguration != null) {
       //Get info from DB (Vim Left and VIM Right)
-      String vimLeft = serviceConfiguration.getIngress();
-      String vimRight = serviceConfiguration.getEgress();
+      NapObject ingress = new NapObject(serviceConfiguration.getIngress(),null);
+      NapObject egress = new NapObject(serviceConfiguration.getEgress(),null);
 
       //Remove entry from DB
       WrapperBay.getInstance().getWimRepo().removeServiceInstanceEntry(instanceId, vlId);
 
-      //TODO
       //// Remove the VPN connection in the VIM Left (use of instance_id/vl_id in the names of resources)
+      VimWrapperConfiguration vimConfigLeft = WrapperBay.getInstance().getVimRepo().getVimConfig(ingress.getLocation());
       // Delete the ipsec connection
+      String ipsecConnectionIdLeft = getIpsecConnection(vimConfigLeft,"vpnconnection_5");
+      if (ipsecConnectionIdLeft != null) {
+        deleteIkePolicy(vimConfigLeft, "vpnconnection_5");
+      }
 
       // Delete the endpoint group for cidr
+      String cidrEndpointGroupIdLeft = getEndpointGroup(vimConfigLeft,"cidr_5");
+      if (cidrEndpointGroupIdLeft != null) {
+        deleteEndpointGroup(vimConfigLeft, "cidr_5");
+      }
 
       // Delete the endpoint group for subnet
+      String subnetEndpointGroupIdLeft = getEndpointGroup(vimConfigLeft,"subnet_5");
+      if (subnetEndpointGroupIdLeft != null) {
+        deleteEndpointGroup(vimConfigLeft, "subnet_5");
+      }
 
       //Check if ipsec policy already used for other connection
       // Delete the ipsec policy
+      String ipsecPolicyIdLeft = getIpsecPolicy(vimConfigLeft,"ipsecpolicy_5");
+      if (ipsecPolicyIdLeft != null) {
+        deleteIpsecPolicy(vimConfigLeft, "ipsecpolicy_5");
+      }
 
       //Check if ike policy already used for other connection
       // Delete the ike policy
-
+      String ikePolicyIdLeft = getIkePolicy(vimConfigLeft,"ikepolicy_5");
+      if (ikePolicyIdLeft != null) {
+        deleteIkePolicy(vimConfigLeft, "ikepolicy_5");
+      }
       //Check if vpn service already used for other connection
       // Delete the vpn service
+      String vpnServiceIdLeft = getVpnService(vimConfigLeft,"vpn_5");
+      if (vpnServiceIdLeft != null) {
+        deleteVpnService(vimConfigLeft, "vpn_5");
+      }
+
+      Logger.info("Left=>  vpn_service_id: " + vpnServiceIdLeft + " ike_policy_id: " + ikePolicyIdLeft +
+          " ipsec_policy_id: " + ipsecPolicyIdLeft + " subnet_endpoint_group_id: " + subnetEndpointGroupIdLeft
+          + " cidr_endpoint_group_id: " + cidrEndpointGroupIdLeft + " ipsec_connection_id: " + ipsecConnectionIdLeft);
 
       //// Remove the VPN connection in the VIM Right (use of instance_id/vl_id in the names of resources)
+      VimWrapperConfiguration vimConfigRight = WrapperBay.getInstance().getVimRepo().getVimConfig(egress.getLocation());
       // Delete the ipsec connection
+      String ipsecConnectionIdRight = getIpsecConnection(vimConfigRight,"vpnconnection_5");
+      if (ipsecConnectionIdRight != null) {
+        deleteIkePolicy(vimConfigRight, "vpnconnection_5");
+      }
 
       // Delete the endpoint group for cidr
-
+      String cidrEndpointGroupIdRight = getEndpointGroup(vimConfigRight,"cidr_5");
+      if (cidrEndpointGroupIdRight != null) {
+        deleteEndpointGroup(vimConfigRight, "cidr_5");
+      }
       // Delete the endpoint group for subnet
+      String subnetEndpointGroupIdRight = getEndpointGroup(vimConfigRight,"subnet_5");
+      if (subnetEndpointGroupIdRight != null) {
+        deleteEndpointGroup(vimConfigRight, "subnet_5");
+      }
 
       //Check if ipsec policy already used for other connection
       // Delete the ipsec policy
+      String ipsecPolicyIdRight = getIpsecPolicy(vimConfigRight,"ipsecpolicy_5");
+      if (ipsecPolicyIdRight != null) {
+        deleteIpsecPolicy(vimConfigRight, "ipsecpolicy_5");
+      }
 
       //Check if ike policy already used for other connection
       // Delete the ike policy
+      String ikePolicyIdRight = getIkePolicy(vimConfigRight,"ikepolicy_5");
+      if (ikePolicyIdRight != null) {
+        deleteIkePolicy(vimConfigRight, "ikepolicy_5");
+      }
 
       //Check if vpn service already used for other connection
       // Delete the vpn service
+      String vpnServiceIdRight = getVpnService(vimConfigRight,"vpn_5");
+      if (vpnServiceIdRight != null) {
+        deleteVpnService(vimConfigRight, "vpn_5");
+      }
+
+      Logger.info("Right=>  vpn_service_id: " + vpnServiceIdRight + " ike_policy_id: " + ikePolicyIdRight +
+          " ipsec_policy_id: " + ipsecPolicyIdRight + " subnet_endpoint_group_id: " + subnetEndpointGroupIdRight
+          + " cidr_endpoint_group_id: " + cidrEndpointGroupIdRight + " ipsec_connection_id: " + ipsecConnectionIdRight);
+
       Logger.info("WAN configuration removed");
     } else {
       Logger.warn("VPN for the instance id " + instanceId + " and vl id " + vlId + " not exist.");
@@ -333,6 +512,476 @@ public class WimVpnaasWrapper extends WimWrapper {
     }
     long stop = System.currentTimeMillis();
     Logger.info("[OpenStackWrapper]getSubnet-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+  public String getIkePolicy(VimWrapperConfiguration vimConfig, String name) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Getting Ike Policy ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.getIkePolicy(name);
+
+      Logger.info("OpenStack wrapper - Ike Policy retrieved.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]getIkePolicy-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+  public String createIkePolicy(VimWrapperConfiguration vimConfig, String name, String lifetime) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Creating Ike Policy ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.createIkePolicy(name,lifetime);
+
+      Logger.info("OpenStack wrapper - Ike Policy created.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]createIkePolicy-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+  public String deleteIkePolicy(VimWrapperConfiguration vimConfig, String name) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Deleting Ike Policy ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.deleteIkePolicy(name);
+
+      Logger.info("OpenStack wrapper - Ike Policy deleted.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]deleteIkePolicy-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+
+  public String getIpsecPolicy(VimWrapperConfiguration vimConfig, String name) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Getting Ipsec Policy ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.getIpsecPolicy(name);
+
+      Logger.info("OpenStack wrapper - Ipsec Policy retrieved.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]getIpsecPolicy-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+  public String createIpsecPolicy(VimWrapperConfiguration vimConfig, String name, String lifetime) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Creating Ipsec Policy ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.createIpsecPolicy(name,lifetime);
+
+      Logger.info("OpenStack wrapper - Ipsec Policy created.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]createIpsecPolicy-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+  public String deleteIpsecPolicy(VimWrapperConfiguration vimConfig, String name) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Deleting Ipsec Policy ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.deleteIpsecPolicy(name);
+
+      Logger.info("OpenStack wrapper - Ipsec Policy deleted.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]deleteIpsecPolicy-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+
+  public String getVpnService(VimWrapperConfiguration vimConfig, String name) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Getting Vpn Service ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.getVpnService(name);
+
+      Logger.info("OpenStack wrapper - Vpn Service retrieved.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]getVpnService-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+  public String createVpnService(VimWrapperConfiguration vimConfig, String name, String routerId) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Creating Vpn Service ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.createVpnService(name,routerId);
+
+      Logger.info("OpenStack wrapper - Vpn Service created.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]createVpnService-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+  public String deleteVpnService(VimWrapperConfiguration vimConfig, String name) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Deleting Vpn Service ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.deleteVpnService(name);
+
+      Logger.info("OpenStack wrapper - Vpn Service deleted.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]deleteVpnService-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+  public String getEndpointGroup(VimWrapperConfiguration vimConfig, String name) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Getting Endpoint Group ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.getEndpointGroup(name);
+
+      Logger.info("OpenStack wrapper - Endpoint Group retrieved.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]getEndpointGroup-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+  public String createEndpointGroup(VimWrapperConfiguration vimConfig, String name, String type, ArrayList<String> endpoints) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Creating Endpoint Group ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.createEndpointGroup(name,type,endpoints);
+
+      Logger.info("OpenStack wrapper - Endpoint Group created.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]createEndpointGroup-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+  public String deleteEndpointGroup(VimWrapperConfiguration vimConfig, String name) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Deleting Endpoint Group ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.deleteEndpointGroup(name);
+
+      Logger.info("OpenStack wrapper - Endpoint Group deleted.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]deleteEndpointGroup-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+  public String getIpsecConnection(VimWrapperConfiguration vimConfig, String name) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Getting Ipsec Connection ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.getIpsecConnection(name);
+
+      Logger.info("OpenStack wrapper - Ipsec Connection retrieved.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]getIpsecConnection-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+  public String createIpsecConnection(VimWrapperConfiguration vimConfig, String name, String vpnServiceId,
+                                      String ikePolicyId, String ipsecPolicyId, String peerAddress, String peerId,
+                                      String psk, String subnetEpGroupId, String cidrEpGroupId) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Creating Ipsec Connection ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.createIpsecConnection(name, vpnServiceId, ikePolicyId,
+          ipsecPolicyId, peerAddress, peerId, psk, subnetEpGroupId, cidrEpGroupId);
+
+      Logger.info("OpenStack wrapper - IpsecConnection created.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]createIpsecConnection-time: " + (stop - start) + " ms");
+    return output;
+  }
+
+  public String deleteIpsecConnection(VimWrapperConfiguration vimConfig, String name) {
+
+    long start = System.currentTimeMillis();
+    // TODO This values should be per User, now they are per VIM. This should be re-designed once
+    // user management is in place.
+    JSONTokener tokener = new JSONTokener(vimConfig.getConfiguration());
+    JSONObject object = (JSONObject) tokener.nextValue();
+    String tenant = object.getString("tenant");
+    String identityPort = null;
+    if (object.has("identity_port")) {
+      identityPort = object.getString("identity_port");
+    }
+
+    String output = null;
+    Logger.info("OpenStack wrapper - Deleting Ipsec Connection ...");
+    try {
+      OpenStackNeutronClient neutronClient = new OpenStackNeutronClient(vimConfig.getVimEndpoint().toString(),
+          vimConfig.getAuthUserName(), vimConfig.getAuthPass(), vimConfig.getDomain(), tenant, identityPort);
+
+      output = neutronClient.deleteIpsecConnection(name);
+
+      Logger.info("OpenStack wrapper - Ipsec Connection deleted.");
+    } catch (IOException e) {
+      Logger.error("OpenStack wrapper - Unable to connect to PoP.");;
+      output = null;
+    }
+    long stop = System.currentTimeMillis();
+    Logger.info("[OpenStackWrapper]deleteIpsecConnection-time: " + (stop - start) + " ms");
     return output;
   }
 
