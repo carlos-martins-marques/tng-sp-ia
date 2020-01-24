@@ -367,11 +367,12 @@ public class OpenStackNeutronClient {
       IkePoliciesData inputIkePolicy = mapper.readValue(ikePolicyString, IkePoliciesData.class);
       Logger.info(inputIkePolicy.getIkePolicy().toString());
 
-      IkePolicyProperties inputIkePolicyProp = inputIkePolicy.getIkePolicy().get(0);
-      Logger.info(inputIkePolicyProp.getId() + ": " + inputIkePolicyProp.getName());
+      if (!inputIkePolicy.getIkePolicy().isEmpty()) {
+        IkePolicyProperties inputIkePolicyProp = inputIkePolicy.getIkePolicy().get(0);
+        Logger.info(inputIkePolicyProp.getId() + ": " + inputIkePolicyProp.getName());
 
-      outputIkePolicyId = inputIkePolicyProp.getId();
-
+        outputIkePolicyId = inputIkePolicyProp.getId();
+      }
     } catch (Exception e) {
       Logger.error("Runtime error getting openstack ike policy" + " error message: " + e.getMessage());
     }
@@ -452,10 +453,12 @@ public class OpenStackNeutronClient {
       IpsecPoliciesData inputIpsecPolicy = mapper.readValue(ipsecPolicyString, IpsecPoliciesData.class);
       Logger.info(inputIpsecPolicy.getIpsecPolicy().toString());
 
-      IpsecPolicyProperties inputIpsecPolicyProp = inputIpsecPolicy.getIpsecPolicy().get(0);
-      Logger.info(inputIpsecPolicyProp.getId() + ": " + inputIpsecPolicyProp.getName());
+      if (!inputIpsecPolicy.getIpsecPolicy().isEmpty()) {
+        IpsecPolicyProperties inputIpsecPolicyProp = inputIpsecPolicy.getIpsecPolicy().get(0);
+        Logger.info(inputIpsecPolicyProp.getId() + ": " + inputIpsecPolicyProp.getName());
 
-      outputIpsecPolicyId = inputIpsecPolicyProp.getId();
+        outputIpsecPolicyId = inputIpsecPolicyProp.getId();
+      }
 
     } catch (Exception e) {
       Logger.error("Runtime error getting openstack ipsec policy" + " error message: " + e.getMessage());
@@ -537,10 +540,12 @@ public class OpenStackNeutronClient {
       VpnServicesData inputVpnService = mapper.readValue(vpnServiceString, VpnServicesData.class);
       Logger.info(inputVpnService.getVpnService().toString());
 
-      VpnServiceProperties inputVpnServiceProp = inputVpnService.getVpnService().get(0);
-      Logger.info(inputVpnServiceProp.getId() + ": " + inputVpnServiceProp.getName());
+      if (!inputVpnService.getVpnService().isEmpty()) {
+        VpnServiceProperties inputVpnServiceProp = inputVpnService.getVpnService().get(0);
+        Logger.info(inputVpnServiceProp.getId() + ": " + inputVpnServiceProp.getName());
 
-      outputVpnServiceId = inputVpnServiceProp.getId();
+        outputVpnServiceId = inputVpnServiceProp.getId();
+      }
 
     } catch (Exception e) {
       Logger.error("Runtime error getting openstack vpn service" + " error message: " + e.getMessage());
@@ -623,10 +628,12 @@ public class OpenStackNeutronClient {
       EndpointGroupsData inputEndpointGroup = mapper.readValue(endpointGroupString, EndpointGroupsData.class);
       Logger.info(inputEndpointGroup.getEndpointGroups().toString());
 
-      EndpointGroupProperties inputEndpointGroupProp = inputEndpointGroup.getEndpointGroups().get(0);
-      Logger.info(inputEndpointGroupProp.getId() + ": " + inputEndpointGroupProp.getName());
+      if (!inputEndpointGroup.getEndpointGroups().isEmpty()) {
+        EndpointGroupProperties inputEndpointGroupProp = inputEndpointGroup.getEndpointGroups().get(0);
+        Logger.info(inputEndpointGroupProp.getId() + ": " + inputEndpointGroupProp.getName());
 
-      outputEndpointGroupId = inputEndpointGroupProp.getId();
+        outputEndpointGroupId = inputEndpointGroupProp.getId();
+      }
 
     } catch (Exception e) {
       Logger.error("Runtime error getting openstack Endpoint Group" + " error message: " + e.getMessage());
@@ -709,10 +716,12 @@ public class OpenStackNeutronClient {
       IpsecConnectionsData inputIpsecConnection = mapper.readValue(ipsecConnectionString, IpsecConnectionsData.class);
       Logger.info(inputIpsecConnection.getIpsecConnections().toString());
 
-      IpsecConnectionProperties inputIpsecConnectionProp = inputIpsecConnection.getIpsecConnections().get(0);
-      Logger.info(inputIpsecConnectionProp.getId() + ": " + inputIpsecConnectionProp.getName());
+      if (!inputIpsecConnection.getIpsecConnections().isEmpty()) {
+        IpsecConnectionProperties inputIpsecConnectionProp = inputIpsecConnection.getIpsecConnections().get(0);
+        Logger.info(inputIpsecConnectionProp.getId() + ": " + inputIpsecConnectionProp.getName());
 
-      outputIpsecConnectionId = inputIpsecConnectionProp.getId();
+        outputIpsecConnectionId = inputIpsecConnectionProp.getId();
+      }
 
     } catch (Exception e) {
       Logger.error("Runtime error getting openstack Ipsec Connection" + " error message: " + e.getMessage());

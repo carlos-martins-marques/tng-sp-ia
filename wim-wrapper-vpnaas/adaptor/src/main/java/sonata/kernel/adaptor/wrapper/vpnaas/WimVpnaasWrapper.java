@@ -360,7 +360,7 @@ public class WimVpnaasWrapper extends WimWrapper {
       // Delete the ipsec connection
       String ipsecConnectionIdLeft = getIpsecConnection(vimConfigLeft,"vpnconnection_5");
       if (ipsecConnectionIdLeft != null) {
-        deleteIkePolicy(vimConfigLeft, "vpnconnection_5");
+        deleteIpsecConnection(vimConfigLeft, "vpnconnection_5");
       }
 
       // Delete the endpoint group for cidr
@@ -404,7 +404,7 @@ public class WimVpnaasWrapper extends WimWrapper {
       // Delete the ipsec connection
       String ipsecConnectionIdRight = getIpsecConnection(vimConfigRight,"vpnconnection_5");
       if (ipsecConnectionIdRight != null) {
-        deleteIkePolicy(vimConfigRight, "vpnconnection_5");
+        deleteIpsecConnection(vimConfigRight, "vpnconnection_5");
       }
 
       // Delete the endpoint group for cidr
