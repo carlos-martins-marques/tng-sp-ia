@@ -1516,6 +1516,7 @@ public class JavaStackCore {
 
       deleteIkePolicy = new HttpDelete(buildUrl.toString());
       deleteIkePolicy.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+      Logger.debug("[JavaStack] " + deleteIkePolicy.toString());
 
       return httpClient.execute(deleteIkePolicy);
     } else {
@@ -1623,6 +1624,7 @@ public class JavaStackCore {
 
       deleteIpsecPolicy = new HttpDelete(buildUrl.toString());
       deleteIpsecPolicy.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+      Logger.debug("[JavaStack] " + deleteIpsecPolicy.toString());
 
       return httpClient.execute(deleteIpsecPolicy);
     } else {
@@ -1730,6 +1732,7 @@ public class JavaStackCore {
 
       deleteVpnService = new HttpDelete(buildUrl.toString());
       deleteVpnService.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+      Logger.debug("[JavaStack] " + deleteVpnService.toString());
 
       return httpClient.execute(deleteVpnService);
     } else {
@@ -1847,6 +1850,7 @@ public class JavaStackCore {
 
       deleteEndpointGroup = new HttpDelete(buildUrl.toString());
       deleteEndpointGroup.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+      Logger.debug("[JavaStack] " + deleteEndpointGroup.toString());
 
       return httpClient.execute(deleteEndpointGroup);
     } else {
@@ -1925,7 +1929,7 @@ public class JavaStackCore {
       createIpsecConnection = new HttpPost(buildUrl.toString());
 
       String requestBody =
-          String.format("{ \"endpoint_group\": { \"name\": \"%s\",\"vpnservice_id\": \"%s\" }," +
+          String.format("{ \"ipsec_site_connection\": { \"name\": \"%s\",\"vpnservice_id\": \"%s\" }," +
               "\"ikepolicy_id\": \"%s\" },\"ipsecpolicy_id\": \"%s\" },\"peer_address\": \"%s\" }" +
               ",\"peer_id\": \"%s\" },\"psk\": \"%s\" },\"local_ep_group_id\": \"%s\" }" +
               ",\"peer_ep_group_id\": \"%s\" }}", name, vpnServiceId, ikePolicyId, ipsecPolicyId,
@@ -1967,6 +1971,7 @@ public class JavaStackCore {
 
       deleteIpsecConnection = new HttpDelete(buildUrl.toString());
       deleteIpsecConnection.addHeader(Constants.AUTHTOKEN_HEADER.toString(), this.token_id);
+      Logger.debug("[JavaStack] " + deleteIpsecConnection.toString());
 
       return httpClient.execute(deleteIpsecConnection);
     } else {
