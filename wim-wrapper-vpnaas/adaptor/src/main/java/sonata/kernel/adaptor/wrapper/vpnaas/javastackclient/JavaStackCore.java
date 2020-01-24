@@ -1511,7 +1511,7 @@ public class JavaStackCore {
       buildUrl.append("http://");
       buildUrl.append(this.endpoint);
       buildUrl.append(":");
-      buildUrl.append(Orchestration.getPORT());
+      buildUrl.append(Network.getPORT());
       buildUrl.append(String.format("/%s/vpn/ikepolicies/%s", Network.getVERSION(),id));
 
       deleteIkePolicy = new HttpDelete(buildUrl.toString());
@@ -1619,7 +1619,7 @@ public class JavaStackCore {
       buildUrl.append("http://");
       buildUrl.append(this.endpoint);
       buildUrl.append(":");
-      buildUrl.append(Orchestration.getPORT());
+      buildUrl.append(Network.getPORT());
       buildUrl.append(String.format("/%s/vpn/ipsecpolicies/%s", Network.getVERSION(),id));
 
       deleteIpsecPolicy = new HttpDelete(buildUrl.toString());
@@ -1727,7 +1727,7 @@ public class JavaStackCore {
       buildUrl.append("http://");
       buildUrl.append(this.endpoint);
       buildUrl.append(":");
-      buildUrl.append(Orchestration.getPORT());
+      buildUrl.append(Network.getPORT());
       buildUrl.append(String.format("/%s/vpn/vpnservices/%s", Network.getVERSION(),id));
 
       deleteVpnService = new HttpDelete(buildUrl.toString());
@@ -1845,7 +1845,7 @@ public class JavaStackCore {
       buildUrl.append("http://");
       buildUrl.append(this.endpoint);
       buildUrl.append(":");
-      buildUrl.append(Orchestration.getPORT());
+      buildUrl.append(Network.getPORT());
       buildUrl.append(String.format("/%s/vpn/endpoint-groups/%s", Network.getVERSION(),id));
 
       deleteEndpointGroup = new HttpDelete(buildUrl.toString());
@@ -1929,9 +1929,9 @@ public class JavaStackCore {
       createIpsecConnection = new HttpPost(buildUrl.toString());
 
       String requestBody =
-          String.format("{ \"ipsec_site_connection\": { \"name\": \"%s\",\"vpnservice_id\": \"%s\" }," +
-              "\"ikepolicy_id\": \"%s\" },\"ipsecpolicy_id\": \"%s\" },\"peer_address\": \"%s\" }" +
-              ",\"peer_id\": \"%s\" },\"psk\": \"%s\" },\"local_ep_group_id\": \"%s\" }" +
+          String.format("{ \"ipsec_site_connection\": { \"name\": \"%s\",\"vpnservice_id\": \"%s\"," +
+              "\"ikepolicy_id\": \"%s\",\"ipsecpolicy_id\": \"%s\",\"peer_address\": \"%s\"" +
+              ",\"peer_id\": \"%s\",\"psk\": \"%s\",\"local_ep_group_id\": \"%s\"" +
               ",\"peer_ep_group_id\": \"%s\" }}", name, vpnServiceId, ikePolicyId, ipsecPolicyId,
               peerAddress, peerId, psk, subnetEpGroupId, cidrEpGroupId);
 
@@ -1966,7 +1966,7 @@ public class JavaStackCore {
       buildUrl.append("http://");
       buildUrl.append(this.endpoint);
       buildUrl.append(":");
-      buildUrl.append(Orchestration.getPORT());
+      buildUrl.append(Network.getPORT());
       buildUrl.append(String.format("/%s/vpn/ipsec-site-connections/%s", Network.getVERSION(),id));
 
       deleteIpsecConnection = new HttpDelete(buildUrl.toString());
