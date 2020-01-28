@@ -41,6 +41,13 @@ public class WimVpnaasWrapper extends WimWrapper {
   private static final org.slf4j.Logger Logger =
       LoggerFactory.getLogger(WimVpnaasWrapper.class);
 
+  private static final Object lockDb = new Object();
+  private static final Object lockVpnService = new Object();
+  private static final Object lockIkePolicy = new Object();
+  private static final Object lockIpsecPolicy = new Object();
+  private static final Object lockEndpointGroup = new Object();
+  private static final Object lockIpsecConnection = new Object();
+
   public WimVpnaasWrapper(WimWrapperConfiguration config) {
     super(config);
   }
@@ -50,11 +57,16 @@ public class WimVpnaasWrapper extends WimWrapper {
 
     boolean out = true;
     //Check if already exist this vpn connection
-    WimServiceConfiguration serviceConfiguration = WrapperBay.getInstance().getWimRepo().getServiceConfigurationFromInstance(instanceId,vlId);
-    if (serviceConfiguration == null) {
-      // Add entry to DB
-      WrapperBay.getInstance().getWimRepo().writeServiceInstanceEntry(instanceId, vlId, ingress.getLocation(), egress.getLocation(), this.getWimConfig().getUuid());
+    WimServiceConfiguration serviceConfiguration = null;
+    synchronized(lockDb) {
+      serviceConfiguration = WrapperBay.getInstance().getWimRepo().getServiceConfigurationFromInstance(instanceId, vlId);
+      if (serviceConfiguration == null) {
+        // Add entry to DB
+        WrapperBay.getInstance().getWimRepo().writeServiceInstanceEntry(instanceId, vlId, ingress.getLocation(), egress.getLocation(), this.getWimConfig().getUuid());
+      }
+    }
 
+    if (serviceConfiguration == null) {
       //// Get information from ingress side (VIM Left)
       // Get router_id from VIM DB for ingress location (VIM Left)
       String routerIdLeft = null;
@@ -180,9 +192,12 @@ public class WimVpnaasWrapper extends WimWrapper {
       //// Create the VPN connection in the VIM Left (use of instance_id/vl_id in the names of resources)
       //Check if vpn service already exist
       // Create the vpn service or get the id of the existent (use router_id Left)
-      String vpnServiceIdLeft = getVpnService(vimConfigLeft,"vpn_"+routerIdLeft);
-      if (vpnServiceIdLeft == null) {
-        vpnServiceIdLeft = createVpnService(vimConfigLeft, "vpn_"+routerIdLeft, routerIdLeft);
+      String vpnServiceIdLeft = null;
+      synchronized(lockVpnService) {
+        vpnServiceIdLeft = getVpnService(vimConfigLeft, "vpn_" + routerIdLeft);
+        if (vpnServiceIdLeft == null) {
+          vpnServiceIdLeft = createVpnService(vimConfigLeft, "vpn_" + routerIdLeft, routerIdLeft);
+        }
       }
       if (vpnServiceIdLeft == null) {
         Logger.error("Failed creating Vpn Service for vim uuid " + ingress.getLocation());
@@ -192,9 +207,12 @@ public class WimVpnaasWrapper extends WimWrapper {
 
       //Check if ike policy already exist
       // Create the ike policy or get the id of the existent (lifetime 60s)
-      String ikePolicyIdLeft = getIkePolicy(vimConfigLeft,"ikepolicy_"+instanceId);
-      if (ikePolicyIdLeft == null) {
-        ikePolicyIdLeft = createIkePolicy(vimConfigLeft, "ikepolicy_"+instanceId, "60");
+      String ikePolicyIdLeft = null;
+      synchronized(lockIkePolicy) {
+        ikePolicyIdLeft = getIkePolicy(vimConfigLeft, "ikepolicy_" + instanceId);
+        if (ikePolicyIdLeft == null) {
+          ikePolicyIdLeft = createIkePolicy(vimConfigLeft, "ikepolicy_" + instanceId, "60");
+        }
       }
       if (ikePolicyIdLeft == null) {
         Logger.error("Failed creating Ike Policy for vim uuid " + ingress.getLocation());
@@ -204,9 +222,12 @@ public class WimVpnaasWrapper extends WimWrapper {
 
       //Check if ipsec policy already exist
       // Create the ipsec policy or get the id of the existent (lifetime 60s)
-      String ipsecPolicyIdLeft = getIpsecPolicy(vimConfigLeft,"ipsecpolicy_"+instanceId);
-      if (ipsecPolicyIdLeft == null) {
-        ipsecPolicyIdLeft = createIpsecPolicy(vimConfigLeft, "ipsecpolicy_"+instanceId, "60");
+      String ipsecPolicyIdLeft = null;
+      synchronized(lockIpsecPolicy) {
+        ipsecPolicyIdLeft = getIpsecPolicy(vimConfigLeft, "ipsecpolicy_" + instanceId);
+        if (ipsecPolicyIdLeft == null) {
+          ipsecPolicyIdLeft = createIpsecPolicy(vimConfigLeft, "ipsecpolicy_" + instanceId, "60");
+        }
       }
       if (ipsecPolicyIdLeft == null) {
         Logger.error("Failed creating Ipsec Policy for vim uuid " + ingress.getLocation());
@@ -214,11 +235,14 @@ public class WimVpnaasWrapper extends WimWrapper {
         return out;
       }
       // Create the endpoint group for subnet (use subnet_id Left)
-      String subnetEndpointGroupIdLeft = getEndpointGroup(vimConfigLeft,"subnet_"+instanceId+"_"+vlId);
-      if (subnetEndpointGroupIdLeft == null) {
-        ArrayList<String> endpoints = new ArrayList<>();
-        endpoints.add(subnetIdLeft);
-        subnetEndpointGroupIdLeft = createEndpointGroup(vimConfigLeft, "subnet_"+instanceId+"_"+vlId, "subnet", endpoints);
+      String subnetEndpointGroupIdLeft = null;
+      synchronized(lockEndpointGroup) {
+        subnetEndpointGroupIdLeft = getEndpointGroup(vimConfigLeft, "subnet_" + instanceId + "_" + vlId);
+        if (subnetEndpointGroupIdLeft == null) {
+          ArrayList<String> endpoints = new ArrayList<>();
+          endpoints.add(subnetIdLeft);
+          subnetEndpointGroupIdLeft = createEndpointGroup(vimConfigLeft, "subnet_" + instanceId + "_" + vlId, "subnet", endpoints);
+        }
       }
       if (subnetEndpointGroupIdLeft == null) {
         Logger.error("Failed creating Endpoint Group subnet for vim uuid " + ingress.getLocation());
@@ -227,11 +251,14 @@ public class WimVpnaasWrapper extends WimWrapper {
       }
 
       // Create the endpoint group for cidr (use cidr Right)
-      String cidrEndpointGroupIdLeft = getEndpointGroup(vimConfigLeft,"cidr_"+instanceId+"_"+vlId);
-      if (cidrEndpointGroupIdLeft == null) {
-        ArrayList<String> endpoints = new ArrayList<>();
-        endpoints.add(subnetCidrRight);
-        cidrEndpointGroupIdLeft = createEndpointGroup(vimConfigLeft, "cidr_"+instanceId+"_"+vlId, "cidr", endpoints);
+      String cidrEndpointGroupIdLeft = null;
+      synchronized(lockEndpointGroup) {
+        cidrEndpointGroupIdLeft = getEndpointGroup(vimConfigLeft, "cidr_" + instanceId + "_" + vlId);
+        if (cidrEndpointGroupIdLeft == null) {
+          ArrayList<String> endpoints = new ArrayList<>();
+          endpoints.add(subnetCidrRight);
+          cidrEndpointGroupIdLeft = createEndpointGroup(vimConfigLeft, "cidr_" + instanceId + "_" + vlId, "cidr", endpoints);
+        }
       }
       if (cidrEndpointGroupIdLeft == null) {
         Logger.error("Failed creating Endpoint Group cidr for vim uuid " + ingress.getLocation());
@@ -240,11 +267,14 @@ public class WimVpnaasWrapper extends WimWrapper {
       }
 
       // create the ipsec connection (use router_ip Right and the ids of the resources created)
-      String ipsecConnectionIdLeft = getIpsecConnection(vimConfigLeft,"vpnconnection_"+instanceId+"_"+vlId);
-      if (ipsecConnectionIdLeft == null) {
-        ipsecConnectionIdLeft = createIpsecConnection(vimConfigLeft, "vpnconnection_"+instanceId+"_"+vlId, vpnServiceIdLeft,
-            ikePolicyIdLeft, ipsecPolicyIdLeft, routerIpRight, routerIpRight, "secret", subnetEndpointGroupIdLeft,
-            cidrEndpointGroupIdLeft);
+      String ipsecConnectionIdLeft = null;
+      synchronized(lockIpsecConnection) {
+        ipsecConnectionIdLeft = getIpsecConnection(vimConfigLeft, "vpnconnection_" + instanceId + "_" + vlId);
+        if (ipsecConnectionIdLeft == null) {
+          ipsecConnectionIdLeft = createIpsecConnection(vimConfigLeft, "vpnconnection_" + instanceId + "_" + vlId, vpnServiceIdLeft,
+              ikePolicyIdLeft, ipsecPolicyIdLeft, routerIpRight, routerIpRight, "secret", subnetEndpointGroupIdLeft,
+              cidrEndpointGroupIdLeft);
+        }
       }
       if (ipsecConnectionIdLeft == null) {
         Logger.error("Failed creating Ipsec Connection for vim uuid " + ingress.getLocation());
@@ -258,9 +288,12 @@ public class WimVpnaasWrapper extends WimWrapper {
       //// Create the VPN connection in the VIM Right (use of instance_id/vl_id in the names of resources)
       //Check if vpn service already exist
       // Create the vpn service or get the id of the existent (use router_id Right)
-      String vpnServiceIdRight = getVpnService(vimConfigRight,"vpn_"+routerIdRight);
-      if (vpnServiceIdRight == null) {
-        vpnServiceIdRight = createVpnService(vimConfigRight, "vpn_"+routerIdRight, routerIdRight);
+      String vpnServiceIdRight = null;
+      synchronized(lockVpnService) {
+        vpnServiceIdRight = getVpnService(vimConfigRight, "vpn_" + routerIdRight);
+        if (vpnServiceIdRight == null) {
+          vpnServiceIdRight = createVpnService(vimConfigRight, "vpn_" + routerIdRight, routerIdRight);
+        }
       }
       if (vpnServiceIdRight == null) {
         Logger.error("Failed creating Vpn Service for vim uuid " + egress.getLocation());
@@ -269,9 +302,12 @@ public class WimVpnaasWrapper extends WimWrapper {
       }
       //Check if ike policy already exist
       // Create the ike policy or get the id of the existent (lifetime 60s)
-      String ikePolicyIdRight = getIkePolicy(vimConfigRight,"ikepolicy_"+instanceId);
-      if (ikePolicyIdRight == null) {
-        ikePolicyIdRight = createIkePolicy(vimConfigRight, "ikepolicy_"+instanceId, "60");
+      String ikePolicyIdRight = null;
+      synchronized(lockIkePolicy) {
+        ikePolicyIdRight = getIkePolicy(vimConfigRight, "ikepolicy_" + instanceId);
+        if (ikePolicyIdRight == null) {
+          ikePolicyIdRight = createIkePolicy(vimConfigRight, "ikepolicy_" + instanceId, "60");
+        }
       }
       if (ikePolicyIdRight == null) {
         Logger.error("Failed creating Ike Policy for vim uuid " + egress.getLocation());
@@ -281,9 +317,12 @@ public class WimVpnaasWrapper extends WimWrapper {
 
       //Check if ipsec policy already exist
       // Create the ipsec policy or get the id of the existent (lifetime 60s)
-      String ipsecPolicyIdRight = getIpsecPolicy(vimConfigRight,"ipsecpolicy_"+instanceId);
-      if (ipsecPolicyIdRight == null) {
-        ipsecPolicyIdRight = createIpsecPolicy(vimConfigRight, "ipsecpolicy_"+instanceId, "60");
+      String ipsecPolicyIdRight = null;
+      synchronized(lockIpsecPolicy) {
+        ipsecPolicyIdRight = getIpsecPolicy(vimConfigRight, "ipsecpolicy_" + instanceId);
+        if (ipsecPolicyIdRight == null) {
+          ipsecPolicyIdRight = createIpsecPolicy(vimConfigRight, "ipsecpolicy_" + instanceId, "60");
+        }
       }
       if (ipsecPolicyIdRight == null) {
         Logger.error("Failed creating Ipsec Policy for vim uuid " + egress.getLocation());
@@ -292,11 +331,14 @@ public class WimVpnaasWrapper extends WimWrapper {
       }
 
       // Create the endpoint group for subnet (use subnet_id Right)
-      String subnetEndpointGroupIdRight = getEndpointGroup(vimConfigRight,"subnet_"+instanceId+"_"+vlId);
-      if (subnetEndpointGroupIdRight == null) {
-        ArrayList<String> endpoints = new ArrayList<>();
-        endpoints.add(subnetIdRight);
-        subnetEndpointGroupIdRight = createEndpointGroup(vimConfigRight, "subnet_"+instanceId+"_"+vlId, "subnet", endpoints);
+      String subnetEndpointGroupIdRight = null;
+      synchronized(lockEndpointGroup) {
+        subnetEndpointGroupIdRight = getEndpointGroup(vimConfigRight, "subnet_" + instanceId + "_" + vlId);
+        if (subnetEndpointGroupIdRight == null) {
+          ArrayList<String> endpoints = new ArrayList<>();
+          endpoints.add(subnetIdRight);
+          subnetEndpointGroupIdRight = createEndpointGroup(vimConfigRight, "subnet_" + instanceId + "_" + vlId, "subnet", endpoints);
+        }
       }
       if (subnetEndpointGroupIdRight == null) {
         Logger.error("Failed creating Endpoint Group subnet for vim uuid " + egress.getLocation());
@@ -305,11 +347,14 @@ public class WimVpnaasWrapper extends WimWrapper {
       }
 
       // Create the endpoint group for cidr (use cidr Left)
-      String cidrEndpointGroupIdRight = getEndpointGroup(vimConfigRight,"cidr_"+instanceId+"_"+vlId);
-      if (cidrEndpointGroupIdRight == null) {
-        ArrayList<String> endpoints = new ArrayList<>();
-        endpoints.add(subnetCidrLeft);
-        cidrEndpointGroupIdRight = createEndpointGroup(vimConfigRight, "cidr_"+instanceId+"_"+vlId, "cidr", endpoints);
+      String cidrEndpointGroupIdRight = null;
+      synchronized(lockEndpointGroup) {
+        cidrEndpointGroupIdRight = getEndpointGroup(vimConfigRight, "cidr_" + instanceId + "_" + vlId);
+        if (cidrEndpointGroupIdRight == null) {
+          ArrayList<String> endpoints = new ArrayList<>();
+          endpoints.add(subnetCidrLeft);
+          cidrEndpointGroupIdRight = createEndpointGroup(vimConfigRight, "cidr_" + instanceId + "_" + vlId, "cidr", endpoints);
+        }
       }
       if (cidrEndpointGroupIdRight == null) {
         Logger.error("Failed creating Endpoint Group cidr for vim uuid " + egress.getLocation());
@@ -318,10 +363,13 @@ public class WimVpnaasWrapper extends WimWrapper {
       }
 
       // create the ipsec connection (use router_ip Left and the ids of the resources created)
-      String ipsecConnectionIdRight = getIpsecConnection(vimConfigRight,"vpnconnection_"+instanceId+"_"+vlId);
-      if (ipsecConnectionIdRight == null) {
-        ipsecConnectionIdRight = createIpsecConnection(vimConfigRight, "vpnconnection_"+instanceId+"_"+vlId, vpnServiceIdRight,
-            ikePolicyIdRight, ipsecPolicyIdRight, routerIpLeft, routerIpLeft, "secret", subnetEndpointGroupIdRight, cidrEndpointGroupIdRight);
+      String ipsecConnectionIdRight = null;
+      synchronized(lockIpsecConnection) {
+        ipsecConnectionIdRight = getIpsecConnection(vimConfigRight, "vpnconnection_" + instanceId + "_" + vlId);
+        if (ipsecConnectionIdRight == null) {
+          ipsecConnectionIdRight = createIpsecConnection(vimConfigRight, "vpnconnection_" + instanceId + "_" + vlId, vpnServiceIdRight,
+              ikePolicyIdRight, ipsecPolicyIdRight, routerIpLeft, routerIpLeft, "secret", subnetEndpointGroupIdRight, cidrEndpointGroupIdRight);
+        }
       }
       if (ipsecConnectionIdRight == null) {
         Logger.error("Failed creating Ipsec Connection for vim uuid " + egress.getLocation());
@@ -346,14 +394,18 @@ public class WimVpnaasWrapper extends WimWrapper {
 
     boolean out = true;
     //Check if exist this vpn connection
-    WimServiceConfiguration serviceConfiguration = WrapperBay.getInstance().getWimRepo().getServiceConfigurationFromInstance(instanceId,vlId);
+    WimServiceConfiguration serviceConfiguration = null;
+    synchronized(lockDb) {
+      serviceConfiguration = WrapperBay.getInstance().getWimRepo().getServiceConfigurationFromInstance(instanceId, vlId);
+      if (serviceConfiguration != null) {
+        //Remove entry from DB
+        WrapperBay.getInstance().getWimRepo().removeServiceInstanceEntry(instanceId, vlId);
+      }
+    }
     if (serviceConfiguration != null) {
       //Get info from DB (Vim Left and VIM Right)
       NapObject ingress = new NapObject(serviceConfiguration.getIngress(),null);
       NapObject egress = new NapObject(serviceConfiguration.getEgress(),null);
-
-      //Remove entry from DB
-      WrapperBay.getInstance().getWimRepo().removeServiceInstanceEntry(instanceId, vlId);
 
       //// Remove the VPN connection in the VIM Left (use of instance_id/vl_id in the names of resources)
       VimWrapperConfiguration vimConfigLeft = WrapperBay.getInstance().getVimRepo().getVimConfig(ingress.getLocation());
