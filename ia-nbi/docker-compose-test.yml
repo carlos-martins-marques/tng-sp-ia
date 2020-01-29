@@ -8,10 +8,10 @@ services:
     links:
      - postgres
     environment:
-     - repo_host postgres
-     - repo_port 5432
-     - repo_user sonata
-     - repo_pass sonatatest
+     - repo_host=postgres
+     - repo_port=5432
+     - repo_user=sonata
+     - repo_pass=sonatatest
     volumes:
      - ./reports:/adaptor/target
 
