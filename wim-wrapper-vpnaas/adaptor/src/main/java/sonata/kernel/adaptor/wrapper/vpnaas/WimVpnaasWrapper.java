@@ -206,12 +206,12 @@ public class WimVpnaasWrapper extends WimWrapper {
       }
 
       //Check if ike policy already exist
-      // Create the ike policy or get the id of the existent (lifetime 60s)
+      // Create the ike policy or get the id of the existent (lifetime 3600s)
       String ikePolicyIdLeft = null;
       synchronized(lockIkePolicy) {
         ikePolicyIdLeft = getIkePolicy(vimConfigLeft, "ikepolicy_" + instanceId);
         if (ikePolicyIdLeft == null) {
-          ikePolicyIdLeft = createIkePolicy(vimConfigLeft, "ikepolicy_" + instanceId, "60");
+          ikePolicyIdLeft = createIkePolicy(vimConfigLeft, "ikepolicy_" + instanceId, "3600");
         }
       }
       if (ikePolicyIdLeft == null) {
@@ -221,12 +221,12 @@ public class WimVpnaasWrapper extends WimWrapper {
       }
 
       //Check if ipsec policy already exist
-      // Create the ipsec policy or get the id of the existent (lifetime 60s)
+      // Create the ipsec policy or get the id of the existent (lifetime 3600s)
       String ipsecPolicyIdLeft = null;
       synchronized(lockIpsecPolicy) {
         ipsecPolicyIdLeft = getIpsecPolicy(vimConfigLeft, "ipsecpolicy_" + instanceId);
         if (ipsecPolicyIdLeft == null) {
-          ipsecPolicyIdLeft = createIpsecPolicy(vimConfigLeft, "ipsecpolicy_" + instanceId, "60");
+          ipsecPolicyIdLeft = createIpsecPolicy(vimConfigLeft, "ipsecpolicy_" + instanceId, "3600");
         }
       }
       if (ipsecPolicyIdLeft == null) {
@@ -301,12 +301,12 @@ public class WimVpnaasWrapper extends WimWrapper {
         return out;
       }
       //Check if ike policy already exist
-      // Create the ike policy or get the id of the existent (lifetime 60s)
+      // Create the ike policy or get the id of the existent (lifetime 3600s)
       String ikePolicyIdRight = null;
       synchronized(lockIkePolicy) {
         ikePolicyIdRight = getIkePolicy(vimConfigRight, "ikepolicy_" + instanceId);
         if (ikePolicyIdRight == null) {
-          ikePolicyIdRight = createIkePolicy(vimConfigRight, "ikepolicy_" + instanceId, "60");
+          ikePolicyIdRight = createIkePolicy(vimConfigRight, "ikepolicy_" + instanceId, "3600");
         }
       }
       if (ikePolicyIdRight == null) {
@@ -316,12 +316,12 @@ public class WimVpnaasWrapper extends WimWrapper {
       }
 
       //Check if ipsec policy already exist
-      // Create the ipsec policy or get the id of the existent (lifetime 60s)
+      // Create the ipsec policy or get the id of the existent (lifetime 3600s)
       String ipsecPolicyIdRight = null;
       synchronized(lockIpsecPolicy) {
         ipsecPolicyIdRight = getIpsecPolicy(vimConfigRight, "ipsecpolicy_" + instanceId);
         if (ipsecPolicyIdRight == null) {
-          ipsecPolicyIdRight = createIpsecPolicy(vimConfigRight, "ipsecpolicy_" + instanceId, "60");
+          ipsecPolicyIdRight = createIpsecPolicy(vimConfigRight, "ipsecpolicy_" + instanceId, "3600");
         }
       }
       if (ipsecPolicyIdRight == null) {
