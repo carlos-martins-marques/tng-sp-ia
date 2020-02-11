@@ -46,7 +46,7 @@ public class ConfigureWanPayload {
 
   private NapObject egress;
 
-  private QosObject qos;
+//  private QosObject qos;
 
   private Boolean bidirectional;
 
@@ -71,9 +71,9 @@ public class ConfigureWanPayload {
     return egress;
   }
 
-  public QosObject getQos() {
+/*  public QosObject getQos() {
     return qos;
-  }
+  }*/
 
   public Boolean getBidirectional() {
     return bidirectional;
@@ -100,9 +100,9 @@ public class ConfigureWanPayload {
     this.egress = egress;
   }
 
-  public void setQos(QosObject qos) {
+/*  public void setQos(QosObject qos) {
     this.qos = qos;
-  }
+  }*/
 
   public void setBidirectional(Boolean bidirectional) {
     this.bidirectional = bidirectional;

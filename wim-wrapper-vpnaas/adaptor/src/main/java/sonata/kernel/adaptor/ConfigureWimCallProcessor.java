@@ -80,7 +80,8 @@ public class ConfigureWimCallProcessor extends AbstractCallProcessor {
     String vlId = request.getVlId();
     NapObject ingress = request.getIngress();
     NapObject egress = request.getEgress();
-    QosObject qos = request.getQos();
+//    QosObject qos = request.getQos();
+    QosObject qos = null;
     Boolean bidirectional = request.getBidirectional();
 
     if (!ingress.getLocation().equals(egress.getLocation())) {
